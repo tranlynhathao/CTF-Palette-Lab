@@ -1,0 +1,98 @@
+# ---------------------------------------------------------------------------
+# CTF Palette Lab — public repository .gitignore
+# Vite + React + TypeScript + Tailwind + GitHub Pages
+# ---------------------------------------------------------------------------
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+jspm_packages/
+
+# Build outputs
+dist/
+build/
+out/
+.vite/
+.cache/
+.tmp/
+temp/
+
+# Test and coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables (never commit real secrets in a public repo)
+.env
+.env.*
+!.env.example
+
+# Local development overrides
+.local/
+*.local
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Vite dependency-pre-bundle cache and temp config files
+vite.config.ts.timestamp-*
+vite.config.js.timestamp-*
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editor folders — keep shared VS Code settings, ignore the rest
+.idea/
+.fleet/
+*.swp
+*.swo
+*~
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Husky — keep hook scripts, ignore the auto-generated runtime
+.husky/_/
+
+# Package manager caches
+.npm/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnpm-store/
+.pnpm-debug.log*
+
+# Optional deployment artifacts
+*.tgz
+*.zip
+*.tar.gz
+
+# Misc
+.sass-cache/
+.eslintcache
+.stylelintcache
+.parcel-cache/
+.turbo/
+.next/
+.nuxt/
+.serverless/
+.firebase/

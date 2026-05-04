@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --bg: #05060a;
+  --bg-2: #0a0c14;
+  --line: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.1);
+  --text: #e8eaf2;
+  --text-muted: #8a90a6;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(76, 201, 240, 0.06), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(194, 24, 91, 0.07), transparent 60%),
+    linear-gradient(180deg, #05060a, #07080d 40%, #05060a);
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(194, 24, 91, 0.4);
+  color: #fff;
+}
+
+@layer components {
+  .glass {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--line);
+  }
+  .panel {
+    @apply glass rounded-2xl shadow-panel;
+  }
+  .hairline {
+    border-color: var(--line);
+  }
+  .hairline-strong {
+    border-color: var(--line-strong);
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .label-eyebrow {
+    @apply text-[10px] font-medium uppercase tracking-[0.18em] text-white/50;
+  }
+  .btn {
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80 transition hover:bg-white/10 hover:text-white active:scale-[0.98];
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-gradient-to-b from-white/15 to-white/5 px-3 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition hover:from-white/20 hover:to-white/10 active:scale-[0.98];
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-white/70;
+  }
+  .ring-focus {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-black;
+  }
+  .input-base {
+    @apply w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition focus:border-white/20 focus:bg-black/60;
+  }
+}
+
+/* Custom scrollbars */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.12);
+  background-clip: content-box;
+}
+
+/* Color blindness filters */
+.cvd-protanopia {
+  filter: url(#cvd-protanopia);
+}
+.cvd-deuteranopia {
+  filter: url(#cvd-deuteranopia);
+}
+.cvd-tritanopia {
+  filter: url(#cvd-tritanopia);
+}
+.cvd-grayscale {
+  filter: grayscale(1);
+}
+
+.checker-bg {
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
