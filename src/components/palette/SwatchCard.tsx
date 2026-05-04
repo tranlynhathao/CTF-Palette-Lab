@@ -101,10 +101,13 @@ export function SwatchCard({
         </div>
       </div>
 
-      {/* Lock badge always visible if locked */}
+      {/* Lock badge always visible if locked. Hidden on hover so the unlock
+          button in the action row is clearly clickable. pointer-events-none
+          ensures clicks always pass through to the underlying IconBtn. */}
       {color.locked && (
         <span
-          className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full"
+          aria-hidden
+          className="pointer-events-none absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full opacity-100 transition-opacity group-hover:opacity-0"
           style={{
             background: fg === "#F2EDE3" ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.2)",
             color: fg,
