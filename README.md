@@ -185,6 +185,52 @@ If the deployed GitHub Pages site shows a blank screen or the browser console re
 
 ---
 
+## The HCMUS CTF 2026 logo preview
+
+The Logo preview tab and the palette comparison cards render a **source-faithful** version of the real HCMUS CTF 2026 wordmark, not a redesign or approximation.
+
+### How it was extracted
+
+1. The master file is `logo-ctf26.ai` (in the repo root). Modern Illustrator saves it as a PDF-compatible stream, so it can be parsed by any PDF tool.
+2. We ran `pdf2svg logo-ctf26.ai src/assets/logo/logo-ctf26.base.svg` once. This emits the exact vector geometry — every path is the original Illustrator path. Text was already converted to outlines in the source, so the preview reproduces the typography exactly with **zero font dependencies**.
+3. A scripted color substitution produced `src/assets/logo/logo-ctf26.svg` — the same geometry, but with three named color slots:
+
+   | Source RGB                    | Hex       | Slot in the recolorable SVG       |
+   | ----------------------------- | --------- | --------------------------------- |
+   | `rgb(89.41%, 12.94%, 45.88%)` | `#E42175` | hard-coded — **fixed brand pink** |
+   | `rgb(13.73%, 12.16%, 12.55%)` | `#232020` | `var(--logo-ink, #232020)`        |
+   | `rgb(100%, 100%, 100%)`       | `#FFFFFF` | `var(--logo-back, #FFFFFF)`       |
+
+4. `src/components/preview/ExactCompetitionLogo.tsx` inlines that SVG and binds `--logo-ink` and `--logo-back` to props driven by the active palette. The brand pink is **never** swapped.
+
+### Recoloring rules
+
+- **Brand pink `#E42175` is locked.** It is hard-coded in the SVG and re-exported as the constant `HCMUS_CTF_BRAND_PINK`. Do not parameterise it. This is the single fixed color of the HCMUS CTF 2026 visual identity.
+- **Ink** (the dark outline + cube front) is bound to `palette.textMain` so it always has high contrast against the canvas.
+- **Back face** of the 3D-extruded letterforms is bound to `palette.surface` (or `surfaceElevated` / `textMuted` depending on the preview card) so the extrusion remains visible against any background.
+
+### What you must NOT do
+
+- Do not redraw, restyle, or "modernise" the geometry. If the master logo changes, update `logo-ctf26.ai`, re-run `pdf2svg`, and re-apply the three colour substitutions.
+- Do not replace the outlined text with a near-match font — the outlines guarantee exactness. There is no font fallback because none is needed.
+- Do not introduce additional palette tokens into the logo. Two slots (ink + back) plus the locked pink is the complete contract.
+- Do not crop or rotate the logo in previews. The viewBox `0 0 210 70` and the locked aspect ratio (`210 / 70`) must be preserved.
+
+### Re-extracting after a logo update
+
+```bash
+brew install pdf2svg          # one-time, if missing
+pdf2svg logo-ctf26.ai src/assets/logo/logo-ctf26.base.svg
+sed -e 's|rgb(89.411926%, 12.940979%, 45.881653%)|#E42175|g' \
+    -e 's|rgb(13.725281%, 12.156677%, 12.548828%)|var(--logo-ink, #232020)|g' \
+    -e 's|rgb(100%, 100%, 100%)|var(--logo-back, #FFFFFF)|g' \
+    src/assets/logo/logo-ctf26.base.svg > src/assets/logo/logo-ctf26.svg
+```
+
+If a future master file uses different `rgb(...)` triplets for ink/back, inspect with `grep -oE 'rgb\([^)]+\)' src/assets/logo/logo-ctf26.base.svg | sort -u` and update the substitutions accordingly.
+
+---
+
 ## Notes on local-only image processing
 
 Image extraction happens **entirely on your device** via a `<canvas>`:

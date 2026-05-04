@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { useMemo } from "react";
 import { usePaletteStore } from "../../store/paletteStore";
 import { computeContrastReport } from "../../lib/contrast";
-import { CubeMotif } from "../motifs/SvgMotifs";
+import { ExactCompetitionLogo } from "../preview/ExactCompetitionLogo";
 import { hexToOklchObject } from "../../lib/color";
 import type { Palette } from "../../types";
 
@@ -70,7 +70,6 @@ function PaletteCompareCard({
   const tm = get("textMain");
   const pr = get("primary");
   const ac = get("accent");
-  const sc = get("secondary");
 
   return (
     <div
@@ -87,24 +86,15 @@ function PaletteCompareCard({
         <div className="text-[10px] uppercase tracking-[0.18em] opacity-60">{palette.mood}</div>
         <div className="mt-0.5 text-sm font-semibold">{palette.name}</div>
 
-        <div className="mt-3 flex items-center gap-2">
-          <CubeMotif primary={pr} secondary={sc} accent={ac} size={48} />
-          <div>
-            <div
-              className="text-[11px] font-extrabold tracking-wide"
-              style={{
-                color: pr,
-                fontStyle: "italic",
-                transform: "skewX(-8deg)",
-                display: "inline-block",
-              }}
-            >
-              HCMUS
-            </div>
-            <div className="text-[9.5px] font-semibold" style={{ color: tm }}>
-              CTF <span style={{ color: ac }}>2026</span>
-            </div>
-          </div>
+        {/* Source-faithful logo preview using the recolorable extracted SVG.
+            Brand pink stays fixed; ink + back are bound to palette tokens. */}
+        <div className="mt-3">
+          <ExactCompetitionLogo
+            ink={tm}
+            back={get("surface")}
+            width="100%"
+            ariaLabel={`HCMUS CTF 2026 logo — ${palette.name}`}
+          />
         </div>
 
         <div className="mt-3 flex h-4 overflow-hidden rounded">
