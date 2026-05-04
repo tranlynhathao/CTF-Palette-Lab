@@ -97,4 +97,7 @@ $RECYCLE.BIN/
 .serverless/
 .firebase/
 
-logo-ctf26.ai
+# Adobe Illustrator master files are NEVER committed to this public repo.
+# The HCMUS CTF 2026 master template is held by the organisers and shared
+# via internal channels (Drive / Slack), not via GitHub Pages.
+*.ai

@@ -1,6 +1,7 @@
 import { ColorInspector } from "../inspector/ColorInspector";
 import { SmartSuggestions } from "../inspector/SmartSuggestions";
 import { ExportPanel } from "../export/ExportPanel";
+import { IllustratorExportPanel } from "../export/IllustratorExportPanel";
 import { DesignSystemStarter } from "../inspector/DesignSystemStarter";
 
 export function RightPanel() {
@@ -9,6 +10,7 @@ export function RightPanel() {
       <ColorInspector />
       <SmartSuggestions />
       <DesignSystemStarter />
+      <IllustratorExportPanel />
       <ExportPanel />
     </aside>
   );

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { ExportPanel } from "./ExportPanel";
+import { IllustratorExportPanel } from "./IllustratorExportPanel";
 
 export function ExportModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
@@ -17,7 +18,7 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
             initial={{ y: 12, scale: 0.97, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 8, scale: 0.97, opacity: 0 }}
-            className="panel w-[min(560px,92vw)] p-5"
+            className="panel max-h-[90vh] w-[min(640px,94vw)] overflow-y-auto p-5"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">
@@ -34,7 +35,10 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
                 <X size={16} />
               </button>
             </div>
-            <ExportPanel />
+            <div className="grid gap-3">
+              <IllustratorExportPanel />
+              <ExportPanel />
+            </div>
           </motion.div>
         </motion.div>
       )}
