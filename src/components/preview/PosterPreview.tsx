@@ -1,7 +1,15 @@
 import { colorHex, usePaletteStore } from "../../store/paletteStore";
 import { withAlpha } from "../../lib/color";
 import { CubeMotif, FlatCubeMotif, GridCubeMotif } from "../motifs/SvgMotifs";
+import { CompetitionLogo } from "../brand/CompetitionLogo";
 
+/**
+ * Poster preview.
+ *
+ * The competition wordmark is rendered via <CompetitionLogo/> — i.e. the
+ * real extracted vector artwork, not retyped text. Cube motifs remain as
+ * supporting decoration only.
+ */
 export function PosterPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
@@ -28,56 +36,46 @@ export function PosterPreview() {
           borderColor: border,
         }}
       >
-        {/* Decorative cube cluster */}
-        <div className="absolute -right-6 -top-4 animate-floatY opacity-90">
-          <CubeMotif primary={pr} secondary={sc} accent={ac} size={140} />
+        {/* Decorative cube cluster — supporting graphic, NOT a logo substitute */}
+        <div className="pointer-events-none absolute -right-10 -top-10 animate-floatY opacity-40">
+          <CubeMotif primary={pr} secondary={sc} accent={ac} size={180} />
         </div>
-        <div className="absolute bottom-12 left-4 opacity-75">
-          <GridCubeMotif
-            primary={withAlpha(sc, 0.6) as any}
-            secondary={withAlpha(pr, 0.6) as any}
-            accent={withAlpha(ac, 0.7) as any}
-            size={64}
-          />
+        <div className="pointer-events-none absolute -left-2 bottom-16 opacity-50">
+          <GridCubeMotif primary={sc} secondary={pr} accent={ac} size={64} />
         </div>
         {/* Grid */}
         <div
-          className="absolute inset-0 opacity-30"
+          className="pointer-events-none absolute inset-0 opacity-25"
           style={{
             backgroundImage: `linear-gradient(${withAlpha(border, 0.5)} 1px, transparent 1px), linear-gradient(90deg, ${withAlpha(border, 0.5)} 1px, transparent 1px)`,
             backgroundSize: "32px 32px",
           }}
         />
 
-        {/* Header */}
+        {/* Eyebrow */}
         <div className="relative px-5 pt-4">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-[0.2em]" style={{ color: tmu }}>
-              HCMUS · 2026
+              Cybersecurity · Capture The Flag
             </span>
             <span
               className="rounded-full border px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider"
               style={{ borderColor: withAlpha(ac, 0.5), color: ac }}
             >
-              Cybersecurity
+              Open · Oct 2026
             </span>
           </div>
         </div>
 
-        {/* Heading */}
-        <div className="relative px-5 pt-5">
-          <h2
-            className="text-[40px] font-black leading-[0.95] tracking-tight"
-            style={{ color: tm, fontStyle: "italic", transform: "skewX(-6deg)" }}
-          >
-            HCMUS
-            <br />
-            <span style={{ color: pr }}>CTF</span> <span style={{ color: ac }}>2026</span>
-          </h2>
-          <p className="mt-2 text-[12px]" style={{ color: tmu }}>
-            Capture The Flag · Hồ Chí Minh University of Science
-          </p>
+        {/* Real competition wordmark — single source of truth */}
+        <div className="relative mt-6 flex justify-center px-5">
+          <CompetitionLogo width="92%" ariaLabel="HCMUS CTF 2026 — poster" />
         </div>
+
+        {/* Tagline */}
+        <p className="relative mt-3 px-5 text-center text-[12px]" style={{ color: tmu }}>
+          Hồ Chí Minh University of Science · Capture · Exploit · Solve
+        </p>
 
         {/* Info cards */}
         <div className="relative mt-5 grid grid-cols-2 gap-2 px-5">
@@ -102,7 +100,7 @@ export function PosterPreview() {
         </div>
 
         {/* Categories */}
-        <div className="relative mt-3 flex flex-wrap gap-1.5 px-5">
+        <div className="relative mt-3 flex flex-wrap justify-center gap-1.5 px-5">
           {cats.map((c, i) => (
             <span
               key={c}
@@ -124,7 +122,7 @@ export function PosterPreview() {
             className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-[12px] font-bold uppercase tracking-[0.16em] shadow-2xl"
             style={{
               background: pr,
-              color: tm === "#FFFFFF" || tm.toLowerCase() === "#ffffff" ? "#000" : tm,
+              color: tm.toLowerCase() === "#ffffff" ? "#000" : tm,
             }}
           >
             Register Now

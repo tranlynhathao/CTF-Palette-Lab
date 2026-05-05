@@ -1,7 +1,20 @@
 import { colorHex, usePaletteStore } from "../../store/paletteStore";
 import { withAlpha } from "../../lib/color";
-import { CubeMotif, FlatCubeMotif } from "../motifs/SvgMotifs";
+import { CubeMotif } from "../motifs/SvgMotifs";
+import { CompetitionLogo } from "../brand/CompetitionLogo";
 
+/**
+ * Landing-page preview.
+ *
+ * Brand identity is rendered via <CompetitionLogo/> in two places:
+ *  - the nav bar (compact width)
+ *  - the hero (prominent width)
+ * Cube motifs remain as supporting decoration only.
+ *
+ * Marketing copy ("Capture. Exploit. Solve." headline, paragraph body) and
+ * CTF-flag content ("flag captured: HCMUS{...}") are not brand-mark text and
+ * stay as regular HTML.
+ */
 export function LandingPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
@@ -24,17 +37,12 @@ export function LandingPreview() {
       className={`overflow-hidden rounded-2xl border ${cvdClass}`}
       style={{ borderColor: border, background: bg }}
     >
-      {/* Nav */}
+      {/* Nav — real logo in compact size, no typed wordmark */}
       <div
         className="flex items-center justify-between border-b px-6 py-3"
         style={{ borderColor: border, background: withAlpha(bg2, 0.5) }}
       >
-        <div className="flex items-center gap-2">
-          <FlatCubeMotif primary={pr} secondary={sc} accent={ac} size={26} />
-          <span className="text-[12px] font-bold tracking-wide" style={{ color: tm }}>
-            HCMUS <span style={{ color: pr }}>CTF</span> <span style={{ color: ac }}>2026</span>
-          </span>
-        </div>
+        <CompetitionLogo width={150} ariaLabel="HCMUS CTF 2026 — landing nav" />
         <nav className="hidden gap-5 text-[11px] md:flex">
           {["Challenges", "Schedule", "Rules", "Sponsors"].map((n) => (
             <span key={n} style={{ color: tmu }}>
@@ -50,9 +58,9 @@ export function LandingPreview() {
         </button>
       </div>
 
-      {/* Hero */}
+      {/* Hero — real logo as the brand anchor, then editable marketing copy */}
       <div
-        className="relative grid gap-4 px-6 py-8 md:grid-cols-[1.1fr_1fr]"
+        className="relative grid gap-6 px-6 py-8 md:grid-cols-[1.2fr_1fr]"
         style={{
           background: `radial-gradient(60% 40% at 80% 0%, ${withAlpha(pr, 0.18)}, transparent 60%)`,
         }}
@@ -61,13 +69,16 @@ export function LandingPreview() {
           <span className="text-[10px] uppercase tracking-[0.22em]" style={{ color: ac }}>
             Registration open · OCT 2026
           </span>
-          <h2 className="mt-2 text-[28px] font-black leading-tight" style={{ color: tm }}>
+          <div className="mt-3">
+            <CompetitionLogo width="92%" ariaLabel="HCMUS CTF 2026 — landing hero" />
+          </div>
+          <h2 className="mt-4 text-[24px] font-black leading-tight" style={{ color: tm }}>
             <span style={{ color: pr }}>Capture.</span> <span style={{ color: ac }}>Exploit.</span>{" "}
             <span>Solve.</span>
           </h2>
           <p className="mt-2 max-w-md text-[12px]" style={{ color: tmu }}>
-            HCMUS CTF 2026 brings hundreds of teams together to chase flags across web, pwn, crypto,
-            reverse and forensics. Build your team, sharpen your edge, and own the leaderboard.
+            Hundreds of teams chase flags across web, pwn, crypto, reverse and forensics. Build your
+            team, sharpen your edge, and own the leaderboard.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <button
@@ -84,6 +95,7 @@ export function LandingPreview() {
             </button>
           </div>
         </div>
+        {/* Decorative cube — supporting graphic, not a logo substitute */}
         <div className="relative grid place-items-center">
           <CubeMotif primary={pr} secondary={sc} accent={ac} size={160} />
         </div>

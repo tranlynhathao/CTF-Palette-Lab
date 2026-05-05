@@ -247,41 +247,55 @@ The Logo preview tab and the palette comparison cards render a **source-faithful
 
 1. The master file is `logo-ctf26.ai` (in the repo root). Modern Illustrator saves it as a PDF-compatible stream, so it can be parsed by any PDF tool.
 2. We ran `pdf2svg logo-ctf26.ai src/assets/logo/logo-ctf26.base.svg` once. This emits the exact vector geometry — every path is the original Illustrator path. Text was already converted to outlines in the source, so the preview reproduces the typography exactly with **zero font dependencies**.
-3. A scripted color substitution produced `src/assets/logo/logo-ctf26.svg` — the same geometry, but with three named color slots:
+3. A scripted color substitution produced `src/assets/logo/logo-ctf26.svg` — the same geometry, but with **four** named color slots so the live preview can react meaningfully to palette changes:
 
-   | Source RGB                    | Hex       | Slot in the recolorable SVG       |
-   | ----------------------------- | --------- | --------------------------------- |
-   | `rgb(89.41%, 12.94%, 45.88%)` | `#E42175` | hard-coded — **fixed brand pink** |
-   | `rgb(13.73%, 12.16%, 12.55%)` | `#232020` | `var(--logo-ink, #232020)`        |
-   | `rgb(100%, 100%, 100%)`       | `#FFFFFF` | `var(--logo-back, #FFFFFF)`       |
+   | Source RGB                    | Hex       | Slot in the recolorable SVG    | Where it appears                                             |
+   | ----------------------------- | --------- | ------------------------------ | ------------------------------------------------------------ |
+   | `rgb(89.41%, 12.94%, 45.88%)` | `#E42175` | `var(--logo-pink, #E42175)`    | Brand pink fills (front face of "HCMUS · CTF · 26")          |
+   | `rgb(100%, 100%, 100%)`       | `#FFFFFF` | `var(--logo-light, #FFFFFF)`   | Back face of the extruded letterforms + light glyph fills    |
+   | `rgb(13.73%, 12.16%, 12.55%)` | `#232020` | `var(--logo-outline, #232020)` | Dark stroke outlines around the back face                    |
+   | `rgb(13.73%, 12.16%, 12.55%)` | `#232020` | `var(--logo-shadow, #232020)`  | Solid dark fill of the cube glyph (the only solid dark fill) |
 
-4. `src/components/preview/ExactCompetitionLogo.tsx` inlines that SVG and binds `--logo-ink` and `--logo-back` to props driven by the active palette. The brand pink is **never** swapped.
+4. `src/components/preview/ExactCompetitionLogo.tsx` inlines that SVG and binds the four CSS vars to props driven by the active palette + the selected colour mode. The brand pink stays locked unless the user explicitly enters Experimental mode.
 
-### Recoloring rules
+### Logo color modes
 
-- **Brand pink `#E42175` is locked.** It is hard-coded in the SVG and re-exported as the constant `HCMUS_CTF_BRAND_PINK`. Do not parameterise it. This is the single fixed color of the HCMUS CTF 2026 visual identity.
-- **Ink** (the dark outline + cube front) is bound to `palette.textMain` so it always has high contrast against the canvas.
-- **Back face** of the 3D-extruded letterforms is bound to `palette.surface` (or `surfaceElevated` / `textMuted` depending on the preview card) so the extrusion remains visible against any background.
+The Logo preview tab includes a segmented control with three colour modes (default: **Palette-Aware**). The selection persists across sessions via Zustand `persist`.
+
+| Mode              | Brand pink                      | Light              | Outline          | Shadow              | When to use                                                                       |
+| ----------------- | ------------------------------- | ------------------ | ---------------- | ------------------- | --------------------------------------------------------------------------------- |
+| **Authentic**     | `#E42175` (locked)              | `#FFFFFF`          | `#232020`        | `#232020`           | Safest brand preview. Only the surrounding card backgrounds change.               |
+| **Palette-Aware** | `#E42175` (locked)              | `palette.textMain` | `palette.border` | `palette.bgPrimary` | Default. Brand pink stays exact; everything else binds to palette tokens.         |
+| **Experimental**  | `palette.primary` (override) ⚠️ | `palette.textMain` | `palette.border` | `palette.bgPrimary` | Alternate brand exploration. Surfaces a warning. Never used for canonical assets. |
+
+In Authentic and Palette-Aware modes the Illustrator export pipeline (SVG, PDF, ZIP) preserves brand pink exactly. In Experimental mode it bakes the override into the export and embeds an `EXPERIMENTAL OVERRIDE` line in the SVG metadata + a warning banner in the bundled ZIP `README.md` — so a designer who picks up the file can never mistake it for an official brand asset.
 
 ### What you must NOT do
 
-- Do not redraw, restyle, or "modernise" the geometry. If the master logo changes, update `logo-ctf26.ai`, re-run `pdf2svg`, and re-apply the three colour substitutions.
+- Do not redraw, restyle, or "modernise" the geometry. If the master logo changes, re-run `pdf2svg` on the updated source, then re-apply the four colour substitutions documented in the snippet at the bottom of this file.
 - Do not replace the outlined text with a near-match font — the outlines guarantee exactness. There is no font fallback because none is needed.
-- Do not introduce additional palette tokens into the logo. Two slots (ink + back) plus the locked pink is the complete contract.
+- Do not introduce additional palette tokens into the SVG. Four zones (pink + light + outline + shadow) is the complete contract. The `accent` prop on `ExactCompetitionLogo` exists for forward-compat with future logo revisions only.
 - Do not crop or rotate the logo in previews. The viewBox `0 0 210 70` and the locked aspect ratio (`210 / 70`) must be preserved.
 
 ### Re-extracting after a logo update
 
 ```bash
 brew install pdf2svg          # one-time, if missing
-pdf2svg logo-ctf26.ai src/assets/logo/logo-ctf26.base.svg
-sed -e 's|rgb(89.411926%, 12.940979%, 45.881653%)|#E42175|g' \
-    -e 's|rgb(13.725281%, 12.156677%, 12.548828%)|var(--logo-ink, #232020)|g' \
-    -e 's|rgb(100%, 100%, 100%)|var(--logo-back, #FFFFFF)|g' \
+pdf2svg /path/to/logo-ctf26.ai src/assets/logo/logo-ctf26.base.svg
+
+# Substitute four distinct CSS-variable slots. Order matters: the stroke=
+# pattern for the dark colour MUST come before the fill= pattern for the
+# same dark colour, so paths with both stroke and fill (the back-face
+# glyphs) get their stroke renamed to --logo-outline first, leaving only
+# the cube glyph's solid dark fill to match --logo-shadow.
+sed -e 's|fill="rgb(89.411926%, 12.940979%, 45.881653%)"|fill="var(--logo-pink, #E42175)"|g' \
+    -e 's|fill="rgb(100%, 100%, 100%)"|fill="var(--logo-light, #FFFFFF)"|g' \
+    -e 's|stroke="rgb(13.725281%, 12.156677%, 12.548828%)"|stroke="var(--logo-outline, #232020)"|g' \
+    -e 's|fill="rgb(13.725281%, 12.156677%, 12.548828%)"|fill="var(--logo-shadow, #232020)"|g' \
     src/assets/logo/logo-ctf26.base.svg > src/assets/logo/logo-ctf26.svg
 ```
 
-If a future master file uses different `rgb(...)` triplets for ink/back, inspect with `grep -oE 'rgb\([^)]+\)' src/assets/logo/logo-ctf26.base.svg | sort -u` and update the substitutions accordingly.
+If a future master file uses different `rgb(...)` triplets, inspect with `grep -oE 'rgb\([^)]+\)' src/assets/logo/logo-ctf26.base.svg | sort -u` and update the four substitutions accordingly. The master `.ai` is intentionally not in this public repo (see "Master AI policy" above) — point `pdf2svg` at wherever the organising team holds it.
 
 ---
 

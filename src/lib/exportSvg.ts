@@ -4,113 +4,131 @@
  *
  * - Geometry comes from the same recolorable SVG used by the on-screen
  *   preview (extracted from `logo-ctf26.ai` via pdf2svg).
- * - The brand pink stays exactly `#E42175` — never substituted.
- * - The two recolorable zones are bound to concrete hex values so the
+ * - The brand pink stays exactly `#E42175` in Authentic + Palette-Aware
+ *   modes. Experimental mode is the only path that may override it, and the
+ *   exported SVG metadata calls that out clearly.
+ * - The four recolorable zones are bound to concrete hex values so the
  *   exported file is self-contained and opens cleanly in Illustrator.
  */
 
 import baseSvg from "../assets/logo/logo-ctf26.svg?raw";
-import type { Palette } from "../types";
-import { colorHex } from "../store/paletteStore";
+import type { LogoColorMode, Palette } from "../types";
+import { resolveLogoColors, type LogoColorSet } from "../components/preview/LogoPreview";
 import { HCMUS_CTF_BRAND_PINK } from "../components/preview/ExactCompetitionLogo";
 import { slugifyPaletteName } from "./download";
 
 export type LogoExportOptions = {
-  /** The active palette providing ink + back tones. */
+  /** The active palette providing the colour zones. */
   palette: Palette;
-  /** Override for the dark "ink" zone. Defaults to palette.textMain. */
-  ink?: string;
-  /** Override for the back-face zone. Defaults to palette.surface. */
-  back?: string;
+  /**
+   * Logo colour mode. Defaults to `paletteAware` so the export reflects what
+   * the user is most likely seeing in the preview.
+   */
+  mode?: LogoColorMode;
+  /** Optional explicit overrides — if provided, take priority over `mode`. */
+  pink?: string;
+  light?: string;
+  outline?: string;
+  shadow?: string;
 };
 
-const RX_INK = /var\(--logo-ink,\s*#232020\)/g;
-const RX_BACK = /var\(--logo-back,\s*#FFFFFF\)/g;
-const RX_PINK = /#E42175/g;
+const RX_PINK = /var\(--logo-pink,\s*#E42175\)/g;
+const RX_LIGHT = /var\(--logo-light,\s*#FFFFFF\)/g;
+const RX_OUTLINE = /var\(--logo-outline,\s*#232020\)/g;
+const RX_SHADOW = /var\(--logo-shadow,\s*#232020\)/g;
 
 /** Build a self-contained, Illustrator-ready SVG string for the given palette. */
-export function buildLogoSvg({ palette, ink, back }: LogoExportOptions): string {
-  const inkHex = (ink ?? colorHex(palette, "textMain") ?? "#232020").toUpperCase();
-  const backHex = (back ?? colorHex(palette, "surface") ?? "#FFFFFF").toUpperCase();
+export function buildLogoSvg(opts: LogoExportOptions): string {
+  const mode: LogoColorMode = opts.mode ?? "paletteAware";
+  const auto = resolveLogoColors(opts.palette, mode);
+  const colors: LogoColorSet = {
+    pink: (opts.pink ?? auto.pink).toUpperCase(),
+    light: (opts.light ?? auto.light).toUpperCase(),
+    outline: (opts.outline ?? auto.outline).toUpperCase(),
+    shadow: (opts.shadow ?? auto.shadow).toUpperCase(),
+    accent: auto.accent,
+  };
 
   // 1. Substitute CSS variables with literal hex values so the SVG opens
   //    correctly in any tool, including Illustrator (which does not honour
   //    CSS custom properties when opening static SVG).
   let out = baseSvg
-    .replace(RX_INK, inkHex)
-    .replace(RX_BACK, backHex)
-    // Pink should already be the literal #E42175. Re-applying the regex
-    // normalises any future variants and confirms exactness.
-    .replace(RX_PINK, HCMUS_CTF_BRAND_PINK);
+    .replace(RX_PINK, colors.pink)
+    .replace(RX_LIGHT, colors.light)
+    .replace(RX_OUTLINE, colors.outline)
+    .replace(RX_SHADOW, colors.shadow);
 
-  // 2. Tag the three colour zones with semantic data attributes that
-  //    survive the round-trip into Illustrator's XML view. We do this with
-  //    string substitution because the SVG has no nested groups to label,
-  //    only a flat list of <path>s.
-  out = annotateColorRoles(out, inkHex, backHex);
+  // 2. Tag the four colour zones with semantic data attributes that survive
+  //    the round-trip into Illustrator's XML view.
+  out = annotateColorRoles(out, colors);
 
   // 3. Inject metadata + a <title>/<desc> for accessibility and provenance.
-  out = injectHeader(out, palette, inkHex, backHex);
+  out = injectHeader(out, opts.palette, mode, colors);
 
   return out;
 }
 
-/** Add `data-role` attributes per fill colour. */
-function annotateColorRoles(svg: string, ink: string, back: string): string {
-  // Match each <path …/> declaration once and append data-role based on its
-  // first fill / stroke colour. Matches both literal hex and the upper/lower
-  // case variants used in the file.
+function annotateColorRoles(svg: string, colors: LogoColorSet): string {
   return svg.replace(/<path\s([^/>]*?)\/>/g, (full, attrs) => {
-    const role = inferRole(attrs, ink, back);
-    if (!role) return full;
     if (/data-role=/.test(attrs)) return full;
+    const role = inferRole(attrs, colors);
+    if (!role) return full;
     return `<path data-role="${role}" ${attrs}/>`;
   });
 }
 
-function inferRole(attrs: string, ink: string, back: string): string | null {
+function inferRole(attrs: string, colors: LogoColorSet): string | null {
   const fillMatch = /fill="([^"]+)"/.exec(attrs);
   const strokeMatch = /stroke="([^"]+)"/.exec(attrs);
   const fill = fillMatch?.[1]?.toUpperCase();
   const stroke = strokeMatch?.[1]?.toUpperCase();
-  const inkU = ink.toUpperCase();
-  const backU = back.toUpperCase();
 
-  // Brand pink is the strongest signal.
-  if (fill === HCMUS_CTF_BRAND_PINK) return "brand-pink";
-  if (fill === backU && stroke === inkU) return "back-with-stroke";
-  if (fill === backU) return "back";
-  if (fill === inkU) return "ink";
-  if (stroke === inkU) return "stroke";
-  if (fill === "NONE" && stroke === inkU) return "stroke";
+  if (fill === colors.pink) return "brand-pink";
+  if (fill === colors.shadow && (!stroke || stroke === "NONE")) return "logo-shadow";
+  if (fill === colors.light && stroke === colors.outline) return "logo-light-with-outline";
+  if (fill === colors.light) return "logo-light";
+  if (fill === "NONE" && stroke === colors.outline) return "logo-outline";
+  if (stroke === colors.outline) return "logo-outline";
   return null;
 }
 
-function injectHeader(svg: string, palette: Palette, ink: string, back: string): string {
+function injectHeader(
+  svg: string,
+  palette: Palette,
+  mode: LogoColorMode,
+  colors: LogoColorSet,
+): string {
   const now = new Date().toISOString();
+  const pinkLine =
+    mode === "experimental"
+      ? `Brand pink    : ${colors.pink}  (EXPERIMENTAL OVERRIDE — official brand pink is ${HCMUS_CTF_BRAND_PINK})`
+      : `Brand pink    : ${colors.pink}  (LOCKED — official brand colour, do not alter)`;
+
   const comment = `<!--
   HCMUS CTF 2026 — official wordmark, recoloured for design exploration.
   Generated by CTF Palette Lab.
 
   Palette       : ${palette.name}
-  Brand pink    : ${HCMUS_CTF_BRAND_PINK}  (LOCKED — do not alter)
-  Ink (zone)    : ${ink}
-  Back (zone)   : ${back}
+  Colour mode   : ${mode}
+  ${pinkLine}
+  Light (zone)  : ${colors.light}
+  Outline (zone): ${colors.outline}
+  Shadow (zone) : ${colors.shadow}
   Generated at  : ${now}
 
   Open in Adobe Illustrator: File → Open → choose this .svg, then File →
-  Save As… → Adobe Illustrator (.ai). Brand pink #E42175 must stay exact.
+  Save As… → Adobe Illustrator (.ai). Authentic + Palette-Aware exports
+  preserve brand pink ${HCMUS_CTF_BRAND_PINK} exactly. Experimental
+  exports override it for exploration only and should not be shipped as
+  official brand artwork.
 -->\n`;
 
-  // Add <title> + <desc> right after the opening <svg ...>
   const titled = svg.replace(
     /<svg([^>]*)>/,
     (_full, openAttrs) =>
-      `<svg${openAttrs}>\n  <title>HCMUS CTF 2026 — ${escapeXml(palette.name)}</title>\n  <desc>Source-faithful HCMUS CTF 2026 wordmark. Brand pink ${HCMUS_CTF_BRAND_PINK} is locked. Other zones reflect the "${escapeXml(palette.name)}" palette. Generated by CTF Palette Lab.</desc>`,
+      `<svg${openAttrs}>\n  <title>HCMUS CTF 2026 — ${escapeXml(palette.name)}</title>\n  <desc>Source-faithful HCMUS CTF 2026 wordmark. Mode: ${mode}. Brand pink ${colors.pink}${mode === "experimental" ? " (experimental override)" : " (locked)"}. Generated by CTF Palette Lab.</desc>`,
   );
 
-  // Place the comment block right after the XML prolog if it exists,
-  // otherwise prepend it.
   if (/^\s*<\?xml[^>]*\?>/.test(titled)) {
     return titled.replace(/(<\?xml[^>]*\?>\s*)/, `$1${comment}`);
   }

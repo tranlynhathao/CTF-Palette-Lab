@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { useMemo } from "react";
 import { usePaletteStore } from "../../store/paletteStore";
 import { computeContrastReport } from "../../lib/contrast";
-import { ExactCompetitionLogo } from "../preview/ExactCompetitionLogo";
+import { CompetitionLogo } from "../brand/CompetitionLogo";
 import { hexToOklchObject } from "../../lib/color";
 import type { Palette } from "../../types";
 
@@ -86,12 +86,14 @@ function PaletteCompareCard({
         <div className="text-[10px] uppercase tracking-[0.18em] opacity-60">{palette.mood}</div>
         <div className="mt-0.5 text-sm font-semibold">{palette.name}</div>
 
-        {/* Source-faithful logo preview using the recolorable extracted SVG.
-            Brand pink stays fixed; ink + back are bound to palette tokens. */}
+        {/* Real competition wordmark, routed through the shared component
+            with this card's palette + forced Palette-Aware mode so two
+            compared palettes look distinctly different even when the user
+            has selected Authentic globally. */}
         <div className="mt-3">
-          <ExactCompetitionLogo
-            ink={tm}
-            back={get("surface")}
+          <CompetitionLogo
+            palette={palette}
+            mode="paletteAware"
             width="100%"
             ariaLabel={`HCMUS CTF 2026 logo — ${palette.name}`}
           />

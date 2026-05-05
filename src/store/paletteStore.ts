@@ -5,6 +5,7 @@ import {
   type CvdMode,
   type GenerationOptions,
   type HarmonyMode,
+  type LogoColorMode,
   type Mood,
   type Palette,
   type PaletteColor,
@@ -24,6 +25,7 @@ type PaletteState = {
   options: GenerationOptions;
   comparison: string[]; // saved palette ids
   cvd: CvdMode;
+  logoMode: LogoColorMode;
   toast: { id: number; text: string } | null;
 
   setSeed: (hex: string) => void;
@@ -52,6 +54,7 @@ type PaletteState = {
   clearComparison: () => void;
 
   setCvd: (m: CvdMode) => void;
+  setLogoMode: (m: LogoColorMode) => void;
   showToast: (text: string) => void;
 };
 
@@ -73,6 +76,7 @@ export const usePaletteStore = create<PaletteState>()(
       options: DEFAULT_GENERATION_OPTIONS,
       comparison: [],
       cvd: "normal",
+      logoMode: "paletteAware",
       toast: null,
 
       setSeed: (hex) => set({ seed: hex }),
@@ -220,6 +224,7 @@ export const usePaletteStore = create<PaletteState>()(
       clearComparison: () => set({ comparison: [] }),
 
       setCvd: (m) => set({ cvd: m }),
+      setLogoMode: (m) => set({ logoMode: m }),
 
       showToast: (text) => {
         const id = ++toastIdCounter;
@@ -240,6 +245,7 @@ export const usePaletteStore = create<PaletteState>()(
         options: s.options,
         comparison: s.comparison,
         cvd: s.cvd,
+        logoMode: s.logoMode,
         selectedRole: s.selectedRole,
       }),
     },

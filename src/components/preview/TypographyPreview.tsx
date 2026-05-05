@@ -1,5 +1,6 @@
 import { colorHex, usePaletteStore } from "../../store/paletteStore";
 import { withAlpha } from "../../lib/color";
+import { CompetitionLogo } from "../brand/CompetitionLogo";
 
 export function TypographyPreview() {
   const current = usePaletteStore((s) => s.current);
@@ -32,17 +33,8 @@ export function TypographyPreview() {
         }}
       >
         <Block label="Logo">
-          <div
-            className="text-[44px] font-black leading-none"
-            style={{
-              color: pr,
-              fontStyle: "italic",
-              transform: "skewX(-8deg)",
-              display: "inline-block",
-            }}
-          >
-            HCMUS
-          </div>
+          {/* Real competition wordmark — never retyped */}
+          <CompetitionLogo width={220} ariaLabel="HCMUS CTF 2026 — typography sample" />
         </Block>
         <Block label="Poster heading">
           <div className="text-[26px] font-black leading-tight" style={{ color: tm }}>

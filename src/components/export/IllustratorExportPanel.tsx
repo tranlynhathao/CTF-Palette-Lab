@@ -1,6 +1,6 @@
 import { Download, FileDown, FileImage, FileText, Info, Loader2, Package } from "lucide-react";
 import { useEffect, useState } from "react";
-import { usePaletteStore, colorHex } from "../../store/paletteStore";
+import { usePaletteStore } from "../../store/paletteStore";
 import { downloadBlob, publicAssetUrl, slugifyPaletteName } from "../../lib/download";
 import { buildLogoSvg, logoSvgFilename } from "../../lib/exportSvg";
 // PDF and ZIP exports pull in heavy dependencies (jspdf, svg2pdf.js, jszip).
@@ -42,14 +42,17 @@ export function IllustratorExportPanel() {
     };
   }, []);
 
-  const ink = colorHex(palette, "textMain");
-  const back = colorHex(palette, "surface");
+  // Exports follow the same colour mode the user is previewing, so what the
+  // user sees in the Logo tab is what they download. Authentic + Palette-Aware
+  // keep brand pink locked; Experimental overrides it (with a warning baked
+  // into the SVG metadata).
+  const mode = usePaletteStore((s) => s.logoMode);
 
   const onSvg = async () => {
     if (busy) return;
     setBusy("svg");
     try {
-      const svg = buildLogoSvg({ palette, ink, back });
+      const svg = buildLogoSvg({ palette, mode });
       downloadBlob(logoSvgFilename(palette), new Blob([svg], { type: "image/svg+xml" }));
       showToast("SVG exported");
     } catch (e) {
@@ -65,7 +68,7 @@ export function IllustratorExportPanel() {
     setBusy("pdf");
     try {
       const { buildLogoPdfBlob, logoPdfFilename } = await import("../../lib/exportPdf");
-      const pdf = await buildLogoPdfBlob({ palette, ink, back });
+      const pdf = await buildLogoPdfBlob({ palette, mode });
       downloadBlob(logoPdfFilename(palette), pdf);
       showToast("PDF exported");
     } catch (e) {
@@ -98,7 +101,7 @@ export function IllustratorExportPanel() {
     setBusy("zip");
     try {
       const { buildIllustratorPackage } = await import("../../lib/exportPackage");
-      const result = await buildIllustratorPackage({ palette, ink, back });
+      const result = await buildIllustratorPackage({ palette, mode });
       downloadBlob(result.filename, result.blob);
       const note = result.aiIncluded
         ? result.pdfIncluded
