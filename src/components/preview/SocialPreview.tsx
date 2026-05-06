@@ -1,18 +1,19 @@
 import { colorHex, usePaletteStore } from "../../store/paletteStore";
 import { withAlpha } from "../../lib/color";
+import { slugifyPaletteName } from "../../lib/download";
 import { CubeMotif, GridCubeMotif } from "../motifs/SvgMotifs";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
 /**
- * 1:1 social media preview.
- *
- * The brand identity uses the shared <CompetitionLogo/> — the real extracted
- * artwork. "ARE YOU READY?" and "Capture · Exploit · Solve" are editable
- * marketing copy, not brand-mark text.
+ * 1:1 social media preview — placeholder mockup for testing palette
+ * combinations. The brand identity uses the shared <CompetitionLogo/>.
+ * Headlines are editable placeholder marketing copy.
  */
 export function SocialPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
+  const projectName = usePaletteStore((s) => s.projectName);
+  const projectSlug = slugifyPaletteName(projectName || "yourbrand");
 
   const bg = colorHex(current, "bgPrimary");
   const bg2 = colorHex(current, "bgSecondary");
@@ -41,7 +42,7 @@ export function SocialPreview() {
 
         <div className="relative flex h-full flex-col p-6">
           <span className="text-[10px] uppercase tracking-[0.22em]" style={{ color: tmu }}>
-            Capture The Flag · 2026 edition
+            {projectName || "Brand"} · 2026 edition
           </span>
 
           {/* Hype headline (editable copy, not the brand mark) */}
@@ -54,7 +55,7 @@ export function SocialPreview() {
 
           {/* Real competition wordmark */}
           <div className="mt-3">
-            <CompetitionLogo width="92%" ariaLabel="HCMUS CTF 2026 — social post" />
+            <CompetitionLogo width="92%" />
           </div>
 
           <div
@@ -72,9 +73,9 @@ export function SocialPreview() {
               Register Now ↗
             </div>
             <div className="text-right font-mono text-[10px]" style={{ color: tmu }}>
-              hcmusctf.dev
+              {projectSlug}.dev
               <br />
-              {"@hcmusctf"}
+              {`@${projectSlug}`}
             </div>
           </div>
         </div>

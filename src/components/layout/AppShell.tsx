@@ -10,11 +10,25 @@ import { ExportModal } from "../export/ExportModal";
 import { usePaletteStore } from "../../store/paletteStore";
 import { ChevronLeft, ChevronRight, PanelRight } from "lucide-react";
 
+/**
+ * Responsive dashboard shell.
+ *
+ *  - desktop (≥ 1536px / 2xl): left + center + right are all visible
+ *  - laptop (1280–1535px / xl): left + center visible, right collapses by
+ *    default but the toggle button still reveals it on demand
+ *  - smaller laptop / 13" MacBook (1024–1279px): only the center workspace
+ *    is visible by default; both sidebars collapse but stay toggleable
+ *  - tablet / mobile (< 1024px): single column. The Sidebar and RightPanel
+ *    move into collapsible <details> sections above and below the workspace
+ */
+const initialOpen = (minWidth: number, fallback: boolean) =>
+  typeof window === "undefined" ? fallback : window.innerWidth >= minWidth;
+
 export function AppShell() {
   const [exportOpen, setExportOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
-  const [leftOpen, setLeftOpen] = useState(true);
-  const [rightOpen, setRightOpen] = useState(true);
+  const [leftOpen, setLeftOpen] = useState(() => initialOpen(1280, true));
+  const [rightOpen, setRightOpen] = useState(() => initialOpen(1536, true));
   const generate = usePaletteStore((s) => s.generate);
   const save = usePaletteStore((s) => s.saveCurrent);
   const randomize = usePaletteStore((s) => s.randomizeSeed);
@@ -83,8 +97,10 @@ export function AppShell() {
           {leftOpen ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
         </button>
 
-        {/* Center workspace */}
-        <main className="flex-1 overflow-y-auto">
+        {/* Center workspace — `min-w-0` is critical so that long children
+            can shrink below their intrinsic width and not force horizontal
+            scroll on the whole shell. */}
+        <main className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
           {/* Mobile sections */}
           <div className="lg:hidden">
             <details className="border-b border-white/5">

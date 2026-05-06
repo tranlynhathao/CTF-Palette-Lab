@@ -33,7 +33,7 @@ function p(
 export const PRELOADED_PALETTES: Palette[] = [
   p(
     "Cubic Cyber Noir",
-    "A mature, premium CTF palette combining deep black, HCMUS magenta, muted gold, and cyber blue.",
+    "A mature, premium dark palette combining deep black, brand magenta, muted gold, and cyber blue.",
     "cyberNoir",
     ["premium", "dark", "logo", "poster"],
     [
@@ -41,7 +41,7 @@ export const PRELOADED_PALETTES: Palette[] = [
       { role: "bgSecondary", label: "Midnight Hull", hex: "#11162A" },
       { role: "surface", label: "Carbon Plate", hex: "#1A2038" },
       { role: "surfaceElevated", label: "Steel Plate", hex: "#222943" },
-      { role: "primary", label: "HCMUS Magenta", hex: "#C2185B" },
+      { role: "primary", label: "Brand Magenta", hex: "#C2185B" },
       { role: "secondary", label: "Cyber Blue", hex: "#4CC9F0" },
       { role: "accent", label: "Vault Gold", hex: "#C9A646" },
       { role: "highlight", label: "Signal Red", hex: "#D72638" },
@@ -52,8 +52,8 @@ export const PRELOADED_PALETTES: Palette[] = [
     ],
   ),
   p(
-    "HCMUS Legacy Modern",
-    "Inspired by previous HCMUS CTF design language but cleaner and more premium.",
+    "Legacy Modern",
+    "Restrained navy and magenta lockup with a slightly softer, more premium feel.",
     "cyberNoir",
     ["legacy", "magenta", "navy"],
     [
@@ -293,9 +293,9 @@ export const PRELOADED_PALETTES: Palette[] = [
   ),
   p(
     "Finalist Candidate",
-    "A serious candidate palette for actual HCMUS CTF 2026 usage. Balanced for logo, poster, and web.",
+    "A serious finalist palette balanced for logo, poster, and web. Strong default starting point.",
     "cyberNoir",
-    ["candidate", "finalist", "hcmusctf2026"],
+    ["candidate", "finalist", "balanced"],
     [
       { role: "bgPrimary", label: "Obsidian", hex: "#06070C" },
       { role: "bgSecondary", label: "Midnight", hex: "#0F1326" },

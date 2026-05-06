@@ -54,7 +54,7 @@ export function CubicMotifPreview() {
           background: `linear-gradient(135deg, ${withAlpha(surface, 0.6)}, transparent)`,
         }}
       >
-        <CompetitionLogo width={170} ariaLabel="HCMUS CTF 2026 — cubic motifs panel" />
+        <CompetitionLogo width={170} ariaLabel="Brand wordmark — cubic motifs panel" />
         <span className="text-[10px] uppercase tracking-[0.18em]" style={{ color: tmu }}>
           Supporting cubic motifs
         </span>

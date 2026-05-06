@@ -91,7 +91,9 @@ export function LogoPreview() {
     <div className="space-y-3">
       <ModeBar />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      {/* Responsive: 1 column by default; 2 columns once cards have ~340px each;
+          3 columns only on very wide screens where each card stays usable. */}
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
         <LogoCard label="Dark" sub="bgPrimary" bg={bg} bgClass={cvdClass} mode={mode}>
           <CompetitionLogo
             pink={colors.pink}
@@ -99,7 +101,7 @@ export function LogoPreview() {
             outline={colors.outline}
             shadow={colors.shadow}
             width="86%"
-            ariaLabel="HCMUS CTF 2026 — dark card"
+            ariaLabel="Brand wordmark — dark card"
           />
         </LogoCard>
 
@@ -110,7 +112,7 @@ export function LogoPreview() {
             outline={colors.outline}
             shadow={colors.shadow}
             width="86%"
-            ariaLabel="HCMUS CTF 2026 — surface card"
+            ariaLabel="Brand wordmark — surface card"
           />
         </LogoCard>
 
@@ -121,7 +123,7 @@ export function LogoPreview() {
             outline={colors.outline}
             shadow={colors.shadow}
             width="86%"
-            ariaLabel="HCMUS CTF 2026 — transparent card"
+            ariaLabel="Brand wordmark — transparent card"
           />
         </LogoCard>
       </div>
@@ -230,7 +232,7 @@ function LogoCard({
         {sub && <span className="font-mono text-[10px] text-white/35">{sub}</span>}
       </div>
       <div
-        className={`relative grid h-56 place-items-center px-6 ${transparent ? "checker-bg" : ""} ${bgClass ?? ""}`}
+        className={`relative grid min-h-[180px] place-items-center overflow-hidden px-6 py-6 sm:min-h-[220px] lg:min-h-[240px] xl:min-h-[260px] ${transparent ? "checker-bg" : ""} ${bgClass ?? ""}`}
         style={transparent ? undefined : { background: bg }}
       >
         {children}

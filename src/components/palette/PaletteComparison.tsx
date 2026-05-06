@@ -35,10 +35,13 @@ export function PaletteComparison() {
         </button>
       </div>
 
+      {/* Auto-fit grid: as many columns as fit at ≥260px wide, capped by the
+          number of palettes. Stacks gracefully on narrow viewports without
+          forcing N columns into a 13" centre workspace. */}
       <div
         className="grid gap-3"
         style={{
-          gridTemplateColumns: `repeat(${Math.min(palettes.length, 4)}, minmax(0,1fr))`,
+          gridTemplateColumns: `repeat(auto-fit, minmax(min(260px, 100%), 1fr))`,
         }}
       >
         {palettes.map((p) => (
@@ -95,7 +98,7 @@ function PaletteCompareCard({
             palette={palette}
             mode="paletteAware"
             width="100%"
-            ariaLabel={`HCMUS CTF 2026 logo — ${palette.name}`}
+            ariaLabel={`Brand wordmark — ${palette.name}`}
           />
         </div>
 

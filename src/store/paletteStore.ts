@@ -26,6 +26,8 @@ type PaletteState = {
   comparison: string[]; // saved palette ids
   cvd: CvdMode;
   logoMode: LogoColorMode;
+  /** Optional, user-editable project name. Empty = no project context. */
+  projectName: string;
   toast: { id: number; text: string } | null;
 
   setSeed: (hex: string) => void;
@@ -55,6 +57,7 @@ type PaletteState = {
 
   setCvd: (m: CvdMode) => void;
   setLogoMode: (m: LogoColorMode) => void;
+  setProjectName: (name: string) => void;
   showToast: (text: string) => void;
 };
 
@@ -77,6 +80,7 @@ export const usePaletteStore = create<PaletteState>()(
       comparison: [],
       cvd: "normal",
       logoMode: "paletteAware",
+      projectName: "",
       toast: null,
 
       setSeed: (hex) => set({ seed: hex }),
@@ -225,6 +229,7 @@ export const usePaletteStore = create<PaletteState>()(
 
       setCvd: (m) => set({ cvd: m }),
       setLogoMode: (m) => set({ logoMode: m }),
+      setProjectName: (name) => set({ projectName: name.slice(0, 80) }),
 
       showToast: (text) => {
         const id = ++toastIdCounter;
@@ -246,6 +251,7 @@ export const usePaletteStore = create<PaletteState>()(
         comparison: s.comparison,
         cvd: s.cvd,
         logoMode: s.logoMode,
+        projectName: s.projectName,
         selectedRole: s.selectedRole,
       }),
     },

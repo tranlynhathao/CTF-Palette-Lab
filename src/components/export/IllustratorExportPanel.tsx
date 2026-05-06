@@ -86,7 +86,7 @@ export function IllustratorExportPanel() {
       const res = await fetch(publicAssetUrl("assets/logo/logo-ctf26.ai"));
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const blob = await res.blob();
-      downloadBlob("logo-ctf26-original.ai", blob);
+      downloadBlob("logo-original.ai", blob);
       showToast("Original AI downloaded");
     } catch (e) {
       showToast("Original AI not available");
@@ -158,7 +158,7 @@ export function IllustratorExportPanel() {
           title="Download Original AI"
           desc={
             aiAvailable === false
-              ? "Master AI template is held by HCMUS CTF organizers. Contact the team for access."
+              ? "Master AI template is held outside this deployment. Contact the project owner for access."
               : "Original source / template file. Palette changes are not baked into this file."
           }
           onClick={onAi}
@@ -181,8 +181,8 @@ export function IllustratorExportPanel() {
         <Info size={13} className="mt-0.5 shrink-0 text-amber-300/80" />
         <p>
           Native <span className="font-mono">.ai</span> generation is handled best inside
-          Illustrator itself. CTF Palette Lab exports Illustrator-ready vector assets and ships the
-          original <span className="font-mono">.ai</span> template so you can continue editing
+          Illustrator itself. Palette Workspace exports Illustrator-ready vector assets and ships
+          the original <span className="font-mono">.ai</span> template so you can continue editing
           safely. For maximum editability, open the SVG or PDF in Illustrator and Save As{" "}
           <span className="font-mono">.ai</span>.
         </p>

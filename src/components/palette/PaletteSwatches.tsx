@@ -59,7 +59,7 @@ export function PaletteSwatches() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6">
         <AnimatePresence mode="popLayout">
           {current.colors.map((c) => (
             <motion.div

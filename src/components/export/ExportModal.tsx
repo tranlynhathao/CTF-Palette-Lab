@@ -24,9 +24,7 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <div className="label-eyebrow">Export</div>
-                <h3 className="mt-0.5 text-base font-semibold text-white">
-                  Hand off your CTF colors
-                </h3>
+                <h3 className="mt-0.5 text-base font-semibold text-white">Hand off your palette</h3>
               </div>
               <button
                 onClick={onClose}

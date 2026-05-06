@@ -75,7 +75,7 @@ export function CompetitionLogo({
       accent={resolved.accent}
       width={width}
       className={className}
-      ariaLabel={ariaLabel ?? `HCMUS CTF 2026 logo — ${effectivePalette.name}`}
+      ariaLabel={ariaLabel ?? `Brand wordmark — ${effectivePalette.name}`}
     />
   );
 }

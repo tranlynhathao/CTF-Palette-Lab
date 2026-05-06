@@ -52,21 +52,30 @@ export function PreviewTabs() {
   };
 
   return (
-    <section className="panel p-5">
-      <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-        <div>
+    <section className="panel p-4 sm:p-5">
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
           <div className="label-eyebrow">Visual Preview</div>
           <h3 className="mt-1 text-base font-semibold text-white">How does this palette feel?</h3>
         </div>
-        <div className="flex items-center gap-2">
-          <Tabs tabs={tabs} value={tab} onChange={setTab} />
-          <button onClick={exportPng} className="btn" title="Export current preview as PNG">
+        {/* `min-w-0` so the Tabs row can shrink + horizontally scroll inside.
+            `flex-wrap` lets the PNG button drop below the Tabs on very narrow
+            widths instead of squeezing them. */}
+        <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+          <div className="min-w-0 max-w-full flex-1">
+            <Tabs tabs={tabs} value={tab} onChange={setTab} />
+          </div>
+          <button
+            onClick={exportPng}
+            className="btn shrink-0"
+            title="Export current preview as PNG"
+          >
             <Download size={12} /> PNG
           </button>
         </div>
       </div>
 
-      <div ref={ref} className="rounded-xl bg-transparent p-1">
+      <div ref={ref} className="min-w-0 rounded-xl bg-transparent p-1">
         {tab === "logo" && <LogoPreview />}
         {tab === "poster" && <PosterPreview />}
         {tab === "social" && <SocialPreview />}

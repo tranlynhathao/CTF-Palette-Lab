@@ -89,7 +89,7 @@ export function generateSuggestions(palette: Palette): Suggestion[] {
       out.push({
         id: "noir-feel",
         level: "good",
-        text: "This palette has a strong cyber noir feeling — well suited for HCMUS CTF 2026 logo exploration.",
+        text: "This palette has a strong cyber noir feeling — well suited for serious brand exploration.",
       });
     }
   }

@@ -7,11 +7,11 @@ const SECTIONS = [
     id: "logo",
     title: "Logo",
     items: [
-      ["HCMUS", "primary"],
-      ["CTF", "textMain"],
-      ["2026", "accent"],
-      ["Shadow", "bgPrimary"],
-      ["Cube", "secondary"],
+      ["Brand pink zone", "primary"],
+      ["Wordmark light", "textMain"],
+      ["Highlight detail", "accent"],
+      ["Shadow / extrusion", "bgPrimary"],
+      ["Stroke / outline", "border"],
     ],
   },
   {

@@ -1,18 +1,21 @@
 import { colorHex, usePaletteStore } from "../../store/paletteStore";
 import { withAlpha } from "../../lib/color";
+import { slugifyPaletteName } from "../../lib/download";
 import { CubeMotif, FlatCubeMotif, GridCubeMotif } from "../motifs/SvgMotifs";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
 /**
- * Poster preview.
+ * Poster preview — placeholder event mockup for testing palette combinations.
  *
- * The competition wordmark is rendered via <CompetitionLogo/> — i.e. the
- * real extracted vector artwork, not retyped text. Cube motifs remain as
- * supporting decoration only.
+ * The brand wordmark is rendered via <CompetitionLogo/>. URLs and labels are
+ * derived from the optional project name in the store; cube motifs and copy
+ * are generic placeholder content the user is welcome to swap.
  */
 export function PosterPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
+  const projectName = usePaletteStore((s) => s.projectName);
+  const projectSlug = slugifyPaletteName(projectName || "yourbrand");
 
   const bg = colorHex(current, "bgPrimary");
   const bg2 = colorHex(current, "bgSecondary");
@@ -56,25 +59,25 @@ export function PosterPreview() {
         <div className="relative px-5 pt-4">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-[0.2em]" style={{ color: tmu }}>
-              Cybersecurity · Capture The Flag
+              {projectName || "Brand"} · Event preview
             </span>
             <span
               className="rounded-full border px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider"
               style={{ borderColor: withAlpha(ac, 0.5), color: ac }}
             >
-              Open · Oct 2026
+              Open · 2026
             </span>
           </div>
         </div>
 
-        {/* Real competition wordmark — single source of truth */}
+        {/* Brand wordmark — single source of truth */}
         <div className="relative mt-6 flex justify-center px-5">
-          <CompetitionLogo width="92%" ariaLabel="HCMUS CTF 2026 — poster" />
+          <CompetitionLogo width="92%" />
         </div>
 
-        {/* Tagline */}
+        {/* Tagline (placeholder — edit in your real artwork) */}
         <p className="relative mt-3 px-5 text-center text-[12px]" style={{ color: tmu }}>
-          Hồ Chí Minh University of Science · Capture · Exploit · Solve
+          Sample tagline · Capture · Explore · Solve
         </p>
 
         {/* Info cards */}
@@ -132,7 +135,7 @@ export function PosterPreview() {
             className="mt-2 text-center text-[9.5px] uppercase tracking-[0.2em]"
             style={{ color: tmu }}
           >
-            hcmusctf.dev
+            {projectSlug}.dev
           </div>
         </div>
       </div>

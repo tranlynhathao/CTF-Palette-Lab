@@ -1,21 +1,22 @@
 import { colorHex, usePaletteStore } from "../../store/paletteStore";
 import { withAlpha } from "../../lib/color";
+import { slugifyPaletteName } from "../../lib/download";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
 /**
- * Terminal preview.
+ * Terminal preview — placeholder mock for testing palette legibility on a
+ * monospace terminal surface.
  *
  * The terminal window is intentionally kept terminal-y — no logo typeset
  * inside the shell prompt. The brand anchor sits ABOVE the window in a
- * small ribbon, rendered with the shared <CompetitionLogo/>.
- *
- * The "HCMUS{...}" strings inside the terminal output are CTF flag content
- * (the literal flag format `flag{...}` used in CTF challenges), not a
- * brand-mark approximation, so they remain as plain text.
+ * small ribbon, rendered with the shared <CompetitionLogo/>. URLs and the
+ * shell session label use the optional project name from the store.
  */
 export function TerminalPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
+  const projectName = usePaletteStore((s) => s.projectName);
+  const projectSlug = slugifyPaletteName(projectName || "yourbrand");
 
   const bg = colorHex(current, "bgPrimary");
   const surface = colorHex(current, "surface");
@@ -39,7 +40,7 @@ export function TerminalPreview() {
           background: `linear-gradient(135deg, ${withAlpha(bg, 0.6)}, ${withAlpha(surface, 0.6)})`,
         }}
       >
-        <CompetitionLogo width={170} ariaLabel="HCMUS CTF 2026 — terminal banner" />
+        <CompetitionLogo width={170} />
         <span
           className="rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider"
           style={{ borderColor: withAlpha(ac, 0.5), color: ac }}
@@ -63,7 +64,7 @@ export function TerminalPreview() {
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: sc }} />
           </div>
           <span className="font-mono text-[10.5px]" style={{ color: tmu }}>
-            hcmusctf-2026 — zsh — 120×30
+            {projectSlug} — zsh — 120×30
           </span>
           <span className="text-[10px]" style={{ color: tmu }}>
             ⌘
@@ -75,31 +76,31 @@ export function TerminalPreview() {
           style={{ color: tmu }}
         >
           {Line(`╭─`, sc)}
-          <span style={{ color: pr }}>~/ctf/hcmus2026</span> on{" "}
+          <span style={{ color: pr }}>~/projects/{projectSlug}</span> on{" "}
           <span style={{ color: ac }}>main</span>
-          <span style={{ color: sc }}>$</span>{" "}
-          <span style={{ color: tm }}>nc challenge.hcmusctf.dev 1337</span>
-          {`> banner: welcome to hcmus ctf 2026`}
-          {`> sending exploit (`}
-          <span style={{ color: ac }}>1024 bytes</span>
+          <span style={{ color: sc }}>$</span> <span style={{ color: tm }}>npm run build</span>
+          {`> bundling assets (`}
+          <span style={{ color: ac }}>1024 modules</span>
           {`)`}
-          {`> response received (`}
-          <span style={{ color: ac }}>318 bytes</span>
+          {`> hashing output (`}
+          <span style={{ color: ac }}>318 files</span>
           {`)`}
           {`> `}
-          <span style={{ color: pr }}>shell escalated to root</span>
-          <span style={{ color: sc }}>$</span> <span style={{ color: tm }}>cat /flag.txt</span>
-          {`> `}
-          <span style={{ color: ac }}>HCMUS{"{c"}</span>•<span style={{ color: ac }}>•</span>•
-          <span style={{ color: ac }}>i</span>•<span style={{ color: ac }}>_</span>••
-          <span style={{ color: ac }}>l</span>•_<span style={{ color: ac }}>•••</span>26
-          <span style={{ color: ac }}>{"}"}</span>
-          {`> `}
-          <span style={{ color: pr }}>solved · +500 points · rank #3</span>
+          <span style={{ color: pr }}>build complete</span>
           <span style={{ color: sc }}>$</span>{" "}
-          <span style={{ color: tm }}>./submit HCMUS{"{*****}"}</span>
+          <span style={{ color: tm }}>cat dist/manifest.json</span>
           {`> `}
-          <span style={{ color: ac }}>✓ correct</span>
+          <span style={{ color: ac }}>{`{ "version": "1.0.0", "build": `}</span>
+          <span style={{ color: ac }}>"</span>
+          <span style={{ color: ac }}>2026.05.05</span>
+          <span style={{ color: ac }}>"</span>
+          <span style={{ color: ac }}>{` }`}</span>
+          {`> `}
+          <span style={{ color: pr }}>checksum verified · 248 kB · gzip 78 kB</span>
+          <span style={{ color: sc }}>$</span>{" "}
+          <span style={{ color: tm }}>./deploy --tag release</span>
+          {`> `}
+          <span style={{ color: ac }}>✓ deployed</span>
           <span style={{ color: sc }}>$</span>{" "}
           <span className="inline-block h-3 w-1.5 align-middle" style={{ background: tm }} />
         </pre>

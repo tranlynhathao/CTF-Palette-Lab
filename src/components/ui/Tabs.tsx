@@ -20,7 +20,7 @@ export function Tabs({
 }) {
   return (
     <div
-      className={`border-white/8 relative flex flex-wrap items-center gap-1 rounded-xl border bg-black/30 p-1 ${size === "sm" ? "text-[11px]" : "text-xs"}`}
+      className={`border-white/8 no-scrollbar relative flex max-w-full items-center gap-1 overflow-x-auto whitespace-nowrap rounded-xl border bg-black/30 p-1 ${size === "sm" ? "text-[11px]" : "text-xs"}`}
     >
       {tabs.map((t) => {
         const active = value === t.id;
@@ -28,7 +28,7 @@ export function Tabs({
           <button
             key={t.id}
             onClick={() => onChange(t.id)}
-            className={`relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition ${
+            className={`relative flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition ${
               active ? "text-white" : "text-white/55 hover:text-white/80"
             }`}
           >

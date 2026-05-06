@@ -1,4 +1,5 @@
 import type { Palette, PaletteColor } from "../types";
+import { usePaletteStore } from "../store/paletteStore";
 
 const ROLE_TO_TOKEN: Record<string, string[]> = {
   bgPrimary: ["background", "primary"],
@@ -21,7 +22,7 @@ function kebab(role: string) {
 
 export function toCssVariables(palette: Palette): string {
   const lines = palette.colors
-    .map((c) => `  --ctf-${kebab(c.role)}: ${c.hex.toLowerCase()};`)
+    .map((c) => `  --brand-${kebab(c.role)}: ${c.hex.toLowerCase()};`)
     .join("\n");
   return `/* ${palette.name} */\n:root {\n${lines}\n}\n`;
 }
@@ -33,7 +34,7 @@ export function toTailwindConfig(palette: Palette): string {
     if (!tree[a]) tree[a] = {};
     tree[a][b] = c.hex.toLowerCase();
   });
-  const obj = JSON.stringify({ ctf: tree }, null, 2)
+  const obj = JSON.stringify({ brand: tree }, null, 2)
     .replace(/"([a-zA-Z_][a-zA-Z0-9_]*)":/g, "$1:")
     .replace(/"/g, '"');
 
@@ -86,6 +87,9 @@ export function paletteSheetSvg(palette: Palette): string {
       </g>`;
   });
 
+  const projectName = usePaletteStore.getState().projectName;
+  const eyebrow = (projectName ? `${projectName} · ` : "") + "Palette Workspace";
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
   <defs>
@@ -97,7 +101,7 @@ export function paletteSheetSvg(palette: Palette): string {
   <rect width="${W}" height="${H}" fill="url(#bg)"/>
   <text x="40" y="70" font-family="Inter, sans-serif" font-size="32" font-weight="800" fill="#F2EDE3">${escapeXml(palette.name)}</text>
   <text x="40" y="100" font-family="Inter, sans-serif" font-size="14" fill="#8E95A8">${escapeXml(palette.description)}</text>
-  <text x="40" y="140" font-family="Inter, sans-serif" font-size="11" letter-spacing="2" fill="#8E95A8" text-transform="uppercase">HCMUS CTF 2026 · CTF PALETTE LAB</text>
+  <text x="40" y="140" font-family="Inter, sans-serif" font-size="11" letter-spacing="2" fill="#8E95A8" text-transform="uppercase">${escapeXml(eyebrow)}</text>
   ${cells}
   <text x="40" y="${H - 20}" font-family="Inter, sans-serif" font-size="11" fill="#8E95A8" opacity="0.7">Mood · ${palette.mood} · Tags · ${palette.tags.join(", ")}</text>
 </svg>`;

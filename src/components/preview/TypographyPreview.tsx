@@ -34,7 +34,7 @@ export function TypographyPreview() {
       >
         <Block label="Logo">
           {/* Real competition wordmark — never retyped */}
-          <CompetitionLogo width={220} ariaLabel="HCMUS CTF 2026 — typography sample" />
+          <CompetitionLogo width={220} ariaLabel="Brand wordmark — typography sample" />
         </Block>
         <Block label="Poster heading">
           <div className="text-[26px] font-black leading-tight" style={{ color: tm }}>
@@ -43,18 +43,18 @@ export function TypographyPreview() {
         </Block>
         <Block label="UI heading">
           <div className="text-[18px] font-bold" style={{ color: tm }}>
-            Challenge: Bypass The Vault
+            Section title placeholder
           </div>
         </Block>
         <Block label="Body text">
           <p className="text-[13px]" style={{ color: tm }}>
-            Web · Pwn · Crypto · Reverse · Forensics. The 2026 edition focuses on real-world
-            exploitation with a competitive twist.
+            Body copy placeholder. The quick brown fox jumps over the lazy dog while testing how the
+            palette reads at paragraph length and standard line-height.
           </p>
         </Block>
         <Block label="Muted metadata">
           <div className="text-[11.5px]" style={{ color: tmu }}>
-            Posted 2026-05-04 · 12 min read · #intro #ctf
+            Updated 2026-05-05 · 12 min read · #placeholder
           </div>
         </Block>
         <Block label="Terminal mono">
@@ -62,7 +62,7 @@ export function TypographyPreview() {
             className="rounded-md p-2 font-mono text-[12px]"
             style={{ background: withAlpha(border, 0.6), color: sc }}
           >
-            $ nc challenge.hcmusctf.dev 1337
+            $ npm run dev
           </div>
         </Block>
         <Block label="Button">

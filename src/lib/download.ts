@@ -40,3 +40,22 @@ export function publicAssetUrl(pathFromPublic: string): string {
   const trimmedPath = pathFromPublic.replace(/^\/+/, "");
   return trimmedBase + trimmedPath;
 }
+
+/**
+ * Build a download filename from project + palette + suffix slugs.
+ *  assetFilename("My Brand", "Cubic Cyber Noir", "logo", "svg")
+ *    → "my-brand-cubic-cyber-noir-logo.svg"
+ *  assetFilename("", "Cubic Cyber Noir", "logo", "svg")
+ *    → "cubic-cyber-noir-logo.svg"
+ */
+export function assetFilename(
+  projectName: string,
+  paletteName: string,
+  suffix: string,
+  ext: string,
+): string {
+  const parts = [projectName, paletteName, suffix]
+    .map((p) => slugifyPaletteName(p ?? ""))
+    .filter((p) => p && p !== "palette");
+  return `${parts.join("-") || "asset"}.${ext}`;
+}

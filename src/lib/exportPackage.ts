@@ -9,9 +9,10 @@ import type { Palette } from "../types";
 import { ROLE_META } from "../types";
 import { buildLogoSvg, logoSvgFilename } from "./exportSvg";
 import { buildLogoPdfBlob } from "./exportPdf";
-import { publicAssetUrl, slugifyPaletteName } from "./download";
+import { assetFilename, publicAssetUrl } from "./download";
 import { toCssVariables, toFigmaTokens, toPaletteJson, toTailwindConfig } from "./export";
 import { HCMUS_CTF_BRAND_PINK } from "../components/preview/ExactCompetitionLogo";
+import { usePaletteStore } from "../store/paletteStore";
 
 export type PackageOptions = {
   palette: Palette;
@@ -36,7 +37,6 @@ export type PackageResult = {
 /** Build the ZIP and return it as a Blob plus diagnostics for the UI. */
 export async function buildIllustratorPackage(opts: PackageOptions): Promise<PackageResult> {
   const { palette } = opts;
-  const slug = slugifyPaletteName(palette.name);
   const zip = new JSZip();
 
   // 1. Current-palette SVG
@@ -53,28 +53,28 @@ export async function buildIllustratorPackage(opts: PackageOptions): Promise<Pac
     zip.file(
       `logo-current-palette.pdf.MISSING.txt`,
       `PDF generation failed in this browser session.\n` +
-        `Open ${logoSvgFilename(palette)} (also in this ZIP) in Illustrator instead, or re-export from CTF Palette Lab.\n\n` +
+        `Open ${logoSvgFilename(palette)} (also in this ZIP) in Illustrator instead, or re-export from Palette Workspace.\n\n` +
         `Error: ${(err as Error)?.message ?? String(err)}\n`,
     );
   }
 
   // 3. Original AI template — intentionally NOT shipped in this public app.
-  //    The master is held by the HCMUS CTF 2026 organising team. We still
-  //    attempt the fetch so a future internal/private deployment that does
-  //    serve the .ai (via an authenticated path or private mirror) bundles
-  //    it automatically. In the public deployment the fetch fails and we
-  //    drop in an explanatory note instead — no broken file, no surprise.
+  //    The master is typically held outside the public deployment. We still
+  //    attempt the fetch so a private deployment that does serve the .ai
+  //    (via an authenticated path or private mirror) bundles it automatically.
+  //    In the public deployment the fetch fails and we drop in an explanatory
+  //    note instead — no broken file, no surprise.
   let aiIncluded = false;
   try {
     const res = await fetch(publicAssetUrl("assets/logo/logo-ctf26.ai"));
     if (res.ok) {
-      zip.file(`logo-ctf26-original.ai`, await res.arrayBuffer());
+      zip.file(`logo-original.ai`, await res.arrayBuffer());
       aiIncluded = true;
     } else {
-      zip.file(`logo-ctf26-original.ai.NOTICE.txt`, AI_POLICY_NOTICE);
+      zip.file(`logo-original.ai.NOTICE.txt`, AI_POLICY_NOTICE);
     }
   } catch {
-    zip.file(`logo-ctf26-original.ai.NOTICE.txt`, AI_POLICY_NOTICE);
+    zip.file(`logo-original.ai.NOTICE.txt`, AI_POLICY_NOTICE);
   }
 
   // 4. Palette artefacts
@@ -103,17 +103,24 @@ export async function buildIllustratorPackage(opts: PackageOptions): Promise<Pac
     compressionOptions: { level: 6 },
   });
 
+  const projectName = usePaletteStore.getState().projectName;
+  const filename = assetFilename(projectName, palette.name, "illustrator-package", "zip");
+
   return {
     blob,
-    filename: `hcmus-ctf-2026-illustrator-package-${slug}.zip`,
+    filename,
     aiIncluded,
     pdfIncluded,
   };
 }
 
 function buildSwatchesText(palette: Palette): string {
+  const projectName = usePaletteStore.getState().projectName;
+  const heading = projectName
+    ? `${projectName} — Illustrator swatch list`
+    : "Illustrator swatch list";
   const lines: string[] = [
-    `HCMUS CTF 2026 — Illustrator swatch list`,
+    heading,
     `Palette: ${palette.name}`,
     `${palette.description}`,
     ``,
@@ -152,22 +159,24 @@ function buildReadme(
         ? "⚠️ Experimental — brand pink overridden by palette.primary"
         : "Palette-Aware — brand pink locked, other zones bound to palette tokens";
 
+  const projectName = usePaletteStore.getState().projectName;
+  const projectLine = projectName ? `Project: **${projectName}**\n` : "";
   const experimentalWarning =
     flags.mode === "experimental"
-      ? `\n> **⚠️ Experimental export.** The brand pink in the bundled SVG/PDF has been overridden by the current \`palette.primary\`. **Do not ship this as official HCMUS CTF 2026 brand artwork.** The official brand pink is ${HCMUS_CTF_BRAND_PINK} — re-export from CTF Palette Lab in Authentic or Palette-Aware mode for canonical assets.\n`
+      ? `\n> **⚠️ Experimental export.** The brand pink in the bundled SVG/PDF has been overridden by the current \`palette.primary\`. **Do not ship this as canonical brand artwork.** The default brand pink is ${HCMUS_CTF_BRAND_PINK} — re-export in Authentic or Palette-Aware mode for canonical assets.\n`
       : "";
 
-  return `# HCMUS CTF 2026 — Illustrator Package
+  return `# Illustrator Package
 
-Generated by **CTF Palette Lab** at ${now}
-Palette: **${palette.name}**
+Generated by **Palette Workspace** at ${now}
+${projectLine}Palette: **${palette.name}**
 Colour mode: **${modeLabel}**
 ${experimentalWarning}
 ## What's in this ZIP
 
 - \`logo-current-palette.svg\` — Editable vector SVG with the current palette baked in. Open directly in Adobe Illustrator (\`File → Open\`) or Figma.
 - \`logo-current-palette.pdf\` — ${flags.pdfIncluded ? "Vector PDF generated by `svg2pdf.js`. Open in Illustrator (`File → Open`) and continue editing." : "*(missing — PDF generation failed; use the SVG instead)*"}
-- \`logo-ctf26-original.ai\` — ${flags.aiIncluded ? "The original Adobe Illustrator master template. Use this as your source of truth." : "*(not included by policy — see `logo-ctf26-original.ai.NOTICE.txt`. The master AI is held by the HCMUS CTF organisers; request it through internal channels.)*"}
+- \`logo-original.ai\` — ${flags.aiIncluded ? "The original Adobe Illustrator master template. Use this as your source of truth." : "*(not included — see `logo-original.ai.NOTICE.txt`. The master AI is held outside this deployment.)*"}
 - \`palette.json\` / \`palette.css\` / \`tailwind-colors.js\` / \`figma-tokens.json\` — Machine-readable palette tokens for code, web, and design tools.
 - \`illustrator-swatches.txt\` — Human-readable swatch list with all hex values, ready to paste into Illustrator's Swatches panel.
 - \`open-and-save-as-ai.jsx\` — Optional Illustrator script: opens the bundled SVG and saves a sibling \`.ai\` file. See "Optional automation" below.
@@ -176,16 +185,16 @@ ${experimentalWarning}
 
 1. Open \`logo-current-palette.svg\` (or \`.pdf\`) in Adobe Illustrator.
 2. \`File → Save As…\` → choose **Adobe Illustrator (.ai)**. Keep the default options.
-3. To layer the new palette into a fresh design, open \`logo-ctf26-original.ai\` first as your master template, then use the swatch values in \`illustrator-swatches.txt\` to repaint.
-4. Verify the brand pink — it must remain exactly **#E42175**. The exported SVG never touches it.
+3. If you have a master AI template, open it first and use the swatch values in \`illustrator-swatches.txt\` to repaint.
+4. Verify the brand pink — by default it must remain exactly **#E42175**. The exported SVG never touches it (except in Experimental mode).
 
 ## Brand color rule
 
-\`#E42175\` is the **fixed HCMUS CTF 2026 brand pink** and is never recoloured by CTF Palette Lab. Any other zones in the wordmark (the dark "ink" outline and the back face of the 3D-extruded letterforms) reflect the active palette.
+\`#E42175\` is the **default brand pink** baked into the sample wordmark and is never recoloured by Palette Workspace in Authentic / Palette-Aware modes. Other zones (light back-face, dark outline, dark shadow) reflect the active palette.
 
 ## Why isn't there a generated \`.ai\` file?
 
-Because Adobe Illustrator's \`.ai\` format is a proprietary, evolving Adobe format. The honest answer is that no browser-only tool can write a \`.ai\` file that matches what Illustrator itself writes. CTF Palette Lab gives you Illustrator-ready vector files (SVG + PDF) plus the original \`.ai\` template, so you can produce a real \`.ai\` from inside Illustrator with one save.
+Because Adobe Illustrator's \`.ai\` format is a proprietary, evolving Adobe format. The honest answer is that no browser-only tool can write a \`.ai\` file that matches what Illustrator itself writes. Palette Workspace gives you Illustrator-ready vector files (SVG + PDF) so you can produce a real \`.ai\` from inside Illustrator with one save.
 
 ## Optional automation
 
@@ -198,29 +207,28 @@ In Illustrator: \`File → Scripts → Other Script…\` → pick \`open-and-sav
  * Phrased as policy, not as a missing-file error, because that is the truth:
  * the master is intentionally not part of the public deployment.
  */
-const AI_POLICY_NOTICE = `HCMUS CTF 2026 — master Adobe Illustrator template
+const AI_POLICY_NOTICE = `Master Adobe Illustrator template
 
-The master \`logo-ctf26.ai\` source file is intentionally NOT shipped with
-the public CTF Palette Lab deployment. It is held by the HCMUS CTF 2026
-organising team and shared via internal channels (Drive / Slack), not via
-GitHub Pages.
+The master \`logo-original.ai\` source file is not shipped with this public
+deployment of Palette Workspace. Master brand files are typically held
+outside public repositories and shared via internal channels.
 
 Why?
   • The master file contains the editable layer / group structure of the
-    HCMUS CTF 2026 wordmark. Publishing it to a public download URL would
-    let anyone — including unaffiliated parties — remix or repurpose the
-    brand asset, and a public commit cannot be undone (git history is
-    permanent).
+    brand wordmark. Publishing it to a public download URL would let anyone
+    — including unaffiliated parties — remix or repurpose the brand asset,
+    and a public commit cannot be undone (git history is permanent).
 
 What you can do
   • Use \`logo-current-palette.svg\` (or \`.pdf\`) in this ZIP. They are
     real vector files with the active palette baked in, open natively in
     Adobe Illustrator and Figma, and can be saved as \`.ai\` from inside
     Illustrator with a single \`File → Save As…\`.
-  • If you need the master template, contact the HCMUS CTF 2026 organising
-    team through your usual internal channel.
+  • If you need the master template, contact the project owner through
+    your usual internal channel.
 
-Brand pink \`#E42175\` is locked across every export — never substitute it.
+The default brand pink \`#E42175\` is locked across every export (except
+in Experimental mode) — never substitute it without intent.
 `;
 
 /**

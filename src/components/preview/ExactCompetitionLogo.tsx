@@ -69,18 +69,25 @@ export function ExactCompetitionLogo({
   accent,
   width = "100%",
   className,
-  ariaLabel = "HCMUS CTF 2026 logo",
+  ariaLabel = "Brand wordmark",
 }: ExactLogoProps) {
+  // The injected <svg> retains its intrinsic width="210pt" height="70pt"
+  // from pdf2svg. Without overriding those, narrow containers would let the
+  // SVG render at its natural 280px and overflow the wrapper, cropping the
+  // logo. The arbitrary-selector classes below force the inline SVG to fill
+  // the wrapper, while `aspect-ratio` on the wrapper preserves the lockup
+  // proportions and `preserveAspectRatio` (already on the source SVG) keeps
+  // the geometry centred and uncropped.
   return (
     <div
       role="img"
       aria-label={ariaLabel}
-      className={className}
+      className={`block max-w-full [&>svg]:block [&>svg]:!h-full [&>svg]:!w-full ${className ?? ""}`}
       style={
         {
           width,
+          maxWidth: "100%",
           aspectRatio: "210 / 70",
-          display: "inline-block",
           lineHeight: 0,
           // Bind palette tokens into the SVG via CSS variables. Each path
           // in the SVG references one of these vars, so swapping any one of

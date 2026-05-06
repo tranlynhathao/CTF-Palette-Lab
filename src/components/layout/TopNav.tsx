@@ -1,8 +1,17 @@
 import { Sparkles, Save, Download, RotateCcw, Cuboid, Keyboard } from "lucide-react";
 import { usePaletteStore } from "../../store/paletteStore";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
+/**
+ * Minimal app header.
+ *
+ * Holds:
+ *  - small icon + neutral product title
+ *  - the essential global actions (Generate / Save / Export / Reset / Shortcuts)
+ *
+ * No marketing copy, no fixed project badge, no project-name placeholder.
+ * The `projectName` slice in the store is still used by previews/exports —
+ * surface it through a future settings panel if you want it editable.
+ */
 export function TopNav({
   onOpenExport,
   onOpenShortcuts,
@@ -13,32 +22,20 @@ export function TopNav({
   const generate = usePaletteStore((s) => s.generate);
   const save = usePaletteStore((s) => s.saveCurrent);
   const reset = usePaletteStore((s) => s.resetToDefault);
-  const current = usePaletteStore((s) => s.current);
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/5 bg-black/40 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 items-center justify-between px-4 lg:px-6">
-        <div className="flex items-center gap-3">
-          <div className="relative grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-white/10 to-white/0 ring-1 ring-white/10">
-            <Cuboid size={18} className="text-white/90" />
-            <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.7)]" />
+      <div className="mx-auto flex h-14 items-center justify-between gap-4 px-4 lg:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5 ring-1 ring-white/10">
+            <Cuboid size={16} className="text-white/80" />
           </div>
-          <div className="flex items-baseline gap-3">
-            <h1 className="text-sm font-semibold tracking-wide text-white">CTF Palette Lab</h1>
-            <span className="hidden rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.18em] text-white/60 sm:inline">
-              HCMUS CTF 2026
-            </span>
-            <span className="hidden text-[11px] text-white/35 lg:inline">
-              · Local-first design tool
-            </span>
-          </div>
+          <h1 className="truncate text-[13px] font-semibold tracking-wide text-white/90">
+            Palette Workspace
+          </h1>
         </div>
 
-        <div className="hidden items-center gap-4 md:flex">
-          <CurrentName name={current.name} />
-        </div>
-
-        <div className="flex items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1.5">
           <button
             onClick={generate}
             className="btn-primary"
@@ -60,31 +57,11 @@ export function TopNav({
             <RotateCcw size={13} />
             <span className="hidden lg:inline">Reset</span>
           </button>
-          <button onClick={onOpenShortcuts} className="btn" title="Keyboard shortcuts">
+          <button onClick={onOpenShortcuts} className="btn" title="Keyboard shortcuts (?)">
             <Keyboard size={13} />
           </button>
         </div>
       </div>
     </header>
-  );
-}
-
-function CurrentName({ name }: { name: string }) {
-  const [pulse, setPulse] = useState(name);
-  if (pulse !== name) {
-    setTimeout(() => setPulse(name), 0);
-  }
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={name}
-        initial={{ opacity: 0, y: -4 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 4 }}
-        className="text-[12px] uppercase tracking-[0.18em] text-white/45"
-      >
-        Current · <span className="text-white/85">{name}</span>
-      </motion.div>
-    </AnimatePresence>
   );
 }

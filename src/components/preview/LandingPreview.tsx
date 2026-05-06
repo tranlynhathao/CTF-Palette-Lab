@@ -1,23 +1,23 @@
 import { colorHex, usePaletteStore } from "../../store/paletteStore";
 import { withAlpha } from "../../lib/color";
+import { slugifyPaletteName } from "../../lib/download";
 import { CubeMotif } from "../motifs/SvgMotifs";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
 /**
- * Landing-page preview.
+ * Landing-page preview — placeholder mockup for testing palette combinations.
  *
  * Brand identity is rendered via <CompetitionLogo/> in two places:
  *  - the nav bar (compact width)
  *  - the hero (prominent width)
- * Cube motifs remain as supporting decoration only.
- *
- * Marketing copy ("Capture. Exploit. Solve." headline, paragraph body) and
- * CTF-flag content ("flag captured: HCMUS{...}") are not brand-mark text and
- * stay as regular HTML.
+ * Cube motifs remain as supporting decoration only. Marketing copy and the
+ * sample terminal snippet are placeholders — swap for your real content.
  */
 export function LandingPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
+  const projectName = usePaletteStore((s) => s.projectName);
+  const projectSlug = slugifyPaletteName(projectName || "yourbrand");
 
   const bg = colorHex(current, "bgPrimary");
   const bg2 = colorHex(current, "bgSecondary");
@@ -42,9 +42,9 @@ export function LandingPreview() {
         className="flex items-center justify-between border-b px-6 py-3"
         style={{ borderColor: border, background: withAlpha(bg2, 0.5) }}
       >
-        <CompetitionLogo width={150} ariaLabel="HCMUS CTF 2026 — landing nav" />
+        <CompetitionLogo width={150} />
         <nav className="hidden gap-5 text-[11px] md:flex">
-          {["Challenges", "Schedule", "Rules", "Sponsors"].map((n) => (
+          {["Overview", "Schedule", "Details", "Sponsors"].map((n) => (
             <span key={n} style={{ color: tmu }}>
               {n}
             </span>
@@ -67,31 +67,31 @@ export function LandingPreview() {
       >
         <div>
           <span className="text-[10px] uppercase tracking-[0.22em]" style={{ color: ac }}>
-            Registration open · OCT 2026
+            {projectName ? `${projectName} · ` : ""}Now open
           </span>
           <div className="mt-3">
-            <CompetitionLogo width="92%" ariaLabel="HCMUS CTF 2026 — landing hero" />
+            <CompetitionLogo width="92%" />
           </div>
           <h2 className="mt-4 text-[24px] font-black leading-tight" style={{ color: tm }}>
-            <span style={{ color: pr }}>Capture.</span> <span style={{ color: ac }}>Exploit.</span>{" "}
-            <span>Solve.</span>
+            <span style={{ color: pr }}>Discover.</span> <span style={{ color: ac }}>Explore.</span>{" "}
+            <span>Build.</span>
           </h2>
           <p className="mt-2 max-w-md text-[12px]" style={{ color: tmu }}>
-            Hundreds of teams chase flags across web, pwn, crypto, reverse and forensics. Build your
-            team, sharpen your edge, and own the leaderboard.
+            Sample landing-page copy. Replace this paragraph with your real product description,
+            event details, or call to action while you test how the palette reads as body text.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <button
               className="rounded-md px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider"
               style={{ background: pr, color: tm.toLowerCase() === "#ffffff" ? "#000" : tm }}
             >
-              Register team
+              Get started
             </button>
             <button
               className="rounded-md border px-3 py-1.5 text-[11px] font-medium"
               style={{ borderColor: border, color: sc }}
             >
-              View challenges
+              Learn more
             </button>
           </div>
         </div>
@@ -127,9 +127,9 @@ export function LandingPreview() {
       {/* Cards */}
       <div className="grid gap-2 px-6 md:grid-cols-3">
         {[
-          ["Web", "12 challenges"],
-          ["Pwn", "9 challenges"],
-          ["Crypto", "8 challenges"],
+          ["Track A", "12 sessions"],
+          ["Track B", "9 sessions"],
+          ["Track C", "8 sessions"],
         ].map(([k, v], i) => (
           <div
             key={k}
@@ -187,15 +187,15 @@ export function LandingPreview() {
           className="overflow-hidden rounded-xl border p-3 font-mono text-[11px] leading-relaxed"
           style={{ background: surface, borderColor: border, color: tmu }}
         >
-          <div style={{ color: ac }}>$ nc challenge.hcmusctf.dev 1337</div>
+          <div style={{ color: ac }}>$ curl https://api.{projectSlug}.dev/v1/health</div>
           <div>
-            <span style={{ color: sc }}>{">"} </span>exploit loaded
+            <span style={{ color: sc }}>{">"} </span>connected
           </div>
           <div>
-            <span style={{ color: sc }}>{">"} </span>shell obtained
+            <span style={{ color: sc }}>{">"} </span>200 ok · 14ms
           </div>
           <div style={{ color: pr }}>
-            {">"} flag captured: HCMUS{"{"}c••i•_•••l_••26{"}"}
+            {">"} status: <span>operational</span>
           </div>
         </div>
       </div>
