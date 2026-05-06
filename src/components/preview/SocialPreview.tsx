@@ -4,11 +4,6 @@ import { slugifyPaletteName } from "../../lib/download";
 import { CubeMotif, GridCubeMotif } from "../motifs/SvgMotifs";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
-/**
- * 1:1 social media preview — placeholder mockup for testing palette
- * combinations. The brand identity uses the shared <CompetitionLogo/>.
- * Headlines are editable placeholder marketing copy.
- */
 export function SocialPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
@@ -32,7 +27,6 @@ export function SocialPreview() {
           background: `radial-gradient(80% 60% at 0% 100%, ${withAlpha(sc, 0.25)}, transparent 60%), radial-gradient(80% 60% at 100% 0%, ${withAlpha(pr, 0.3)}, transparent 60%), linear-gradient(180deg, ${bg2}, ${bg})`,
         }}
       >
-        {/* Decorative cubes — supporting graphic only */}
         <div className="pointer-events-none absolute -right-6 -top-6 opacity-50">
           <CubeMotif primary={pr} secondary={sc} accent={ac} size={150} />
         </div>
@@ -45,7 +39,6 @@ export function SocialPreview() {
             {projectName || "Brand"} · 2026 edition
           </span>
 
-          {/* Hype headline (editable copy, not the brand mark) */}
           <div
             className="mt-3 text-[42px] font-black leading-[0.95] tracking-tight"
             style={{ color: ac, fontStyle: "italic", transform: "skewX(-6deg)" }}
@@ -53,7 +46,6 @@ export function SocialPreview() {
             ARE YOU READY?
           </div>
 
-          {/* Real competition wordmark */}
           <div className="mt-3">
             <CompetitionLogo width="92%" />
           </div>

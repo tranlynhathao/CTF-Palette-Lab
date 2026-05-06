@@ -33,7 +33,6 @@ export function TypographyPreview() {
         }}
       >
         <Block label="Logo">
-          {/* Real competition wordmark — never retyped */}
           <CompetitionLogo width={220} ariaLabel="Brand wordmark — typography sample" />
         </Block>
         <Block label="Poster heading">

@@ -1,16 +1,3 @@
-/**
- * Serialise the current sample brand wordmark as an Illustrator-ready SVG
- * with the active palette baked in.
- *
- * - Geometry comes from the same recolorable SVG used by the on-screen
- *   preview (extracted from a master `.ai` via pdf2svg).
- * - The brand pink stays exactly `#E42175` in Authentic + Palette-Aware
- *   modes. Experimental mode is the only path that may override it, and the
- *   exported SVG metadata calls that out clearly.
- * - The four recolorable zones are bound to concrete hex values so the
- *   exported file is self-contained and opens cleanly in Illustrator.
- */
-
 import baseSvg from "../assets/logo/logo-ctf26.svg?raw";
 import type { LogoColorMode, Palette } from "../types";
 import { resolveLogoColors, type LogoColorSet } from "../components/preview/LogoPreview";
@@ -19,14 +6,8 @@ import { assetFilename } from "./download";
 import { usePaletteStore } from "../store/paletteStore";
 
 export type LogoExportOptions = {
-  /** The active palette providing the colour zones. */
   palette: Palette;
-  /**
-   * Logo colour mode. Defaults to `paletteAware` so the export reflects what
-   * the user is most likely seeing in the preview.
-   */
   mode?: LogoColorMode;
-  /** Optional explicit overrides — if provided, take priority over `mode`. */
   pink?: string;
   light?: string;
   outline?: string;
@@ -38,7 +19,6 @@ const RX_LIGHT = /var\(--logo-light,\s*#FFFFFF\)/g;
 const RX_OUTLINE = /var\(--logo-outline,\s*#232020\)/g;
 const RX_SHADOW = /var\(--logo-shadow,\s*#232020\)/g;
 
-/** Build a self-contained, Illustrator-ready SVG string for the given palette. */
 export function buildLogoSvg(opts: LogoExportOptions): string {
   const mode: LogoColorMode = opts.mode ?? "paletteAware";
   const auto = resolveLogoColors(opts.palette, mode);
@@ -50,20 +30,15 @@ export function buildLogoSvg(opts: LogoExportOptions): string {
     accent: auto.accent,
   };
 
-  // 1. Substitute CSS variables with literal hex values so the SVG opens
-  //    correctly in any tool, including Illustrator (which does not honour
-  //    CSS custom properties when opening static SVG).
+  // Flatten CSS variables to literal hex — Illustrator does not honour CSS
+  // custom properties when opening static SVG.
   let out = baseSvg
     .replace(RX_PINK, colors.pink)
     .replace(RX_LIGHT, colors.light)
     .replace(RX_OUTLINE, colors.outline)
     .replace(RX_SHADOW, colors.shadow);
 
-  // 2. Tag the four colour zones with semantic data attributes that survive
-  //    the round-trip into Illustrator's XML view.
   out = annotateColorRoles(out, colors);
-
-  // 3. Inject metadata + a <title>/<desc> for accessibility and provenance.
   out = injectHeader(out, opts.palette, mode, colors);
 
   return out;
@@ -145,7 +120,6 @@ function escapeXml(s: string): string {
   );
 }
 
-/** Standard download filename for the current logo SVG. */
 export function logoSvgFilename(palette: Palette): string {
   return assetFilename(usePaletteStore.getState().projectName, palette.name, "logo", "svg");
 }

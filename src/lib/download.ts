@@ -1,7 +1,3 @@
-/**
- * Trigger a browser download for a Blob.
- * Used by every export path so cleanup behaviour is consistent.
- */
 export function downloadBlob(filename: string, blob: Blob): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -14,10 +10,6 @@ export function downloadBlob(filename: string, blob: Blob): void {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/**
- * URL-friendly slug for use in download filenames.
- * Falls back to "palette" if the input collapses to an empty string.
- */
 export function slugifyPaletteName(name: string): string {
   const slug = name
     .toLowerCase()
@@ -29,11 +21,6 @@ export function slugifyPaletteName(name: string): string {
   return slug || "palette";
 }
 
-/**
- * Resolve a path inside the deployed `public/` folder, honouring Vite's
- * configured base URL. Works in dev (base "/") and on a GitHub Pages project
- * site (base "/<repo>/") without any code changes.
- */
 export function publicAssetUrl(pathFromPublic: string): string {
   const base = import.meta.env.BASE_URL || "/";
   const trimmedBase = base.endsWith("/") ? base : base + "/";
@@ -41,13 +28,6 @@ export function publicAssetUrl(pathFromPublic: string): string {
   return trimmedBase + trimmedPath;
 }
 
-/**
- * Build a download filename from project + palette + suffix slugs.
- *  assetFilename("My Brand", "Cubic Cyber Noir", "logo", "svg")
- *    → "my-brand-cubic-cyber-noir-logo.svg"
- *  assetFilename("", "Cubic Cyber Noir", "logo", "svg")
- *    → "cubic-cyber-noir-logo.svg"
- */
 export function assetFilename(
   projectName: string,
   paletteName: string,

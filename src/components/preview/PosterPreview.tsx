@@ -4,13 +4,6 @@ import { slugifyPaletteName } from "../../lib/download";
 import { CubeMotif, FlatCubeMotif, GridCubeMotif } from "../motifs/SvgMotifs";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
-/**
- * Poster preview — placeholder event mockup for testing palette combinations.
- *
- * The brand wordmark is rendered via <CompetitionLogo/>. URLs and labels are
- * derived from the optional project name in the store; cube motifs and copy
- * are generic placeholder content the user is welcome to swap.
- */
 export function PosterPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
@@ -39,14 +32,12 @@ export function PosterPreview() {
           borderColor: border,
         }}
       >
-        {/* Decorative cube cluster — supporting graphic, NOT a logo substitute */}
         <div className="pointer-events-none absolute -right-10 -top-10 animate-floatY opacity-40">
           <CubeMotif primary={pr} secondary={sc} accent={ac} size={180} />
         </div>
         <div className="pointer-events-none absolute -left-2 bottom-16 opacity-50">
           <GridCubeMotif primary={sc} secondary={pr} accent={ac} size={64} />
         </div>
-        {/* Grid */}
         <div
           className="pointer-events-none absolute inset-0 opacity-25"
           style={{
@@ -55,7 +46,6 @@ export function PosterPreview() {
           }}
         />
 
-        {/* Eyebrow */}
         <div className="relative px-5 pt-4">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-[0.2em]" style={{ color: tmu }}>
@@ -70,17 +60,14 @@ export function PosterPreview() {
           </div>
         </div>
 
-        {/* Brand wordmark — single source of truth */}
         <div className="relative mt-6 flex justify-center px-5">
           <CompetitionLogo width="92%" />
         </div>
 
-        {/* Tagline (placeholder — edit in your real artwork) */}
         <p className="relative mt-3 px-5 text-center text-[12px]" style={{ color: tmu }}>
           Sample tagline · Capture · Explore · Solve
         </p>
 
-        {/* Info cards */}
         <div className="relative mt-5 grid grid-cols-2 gap-2 px-5">
           <InfoCard
             label="Qualifier"
@@ -102,7 +89,6 @@ export function PosterPreview() {
           />
         </div>
 
-        {/* Categories */}
         <div className="relative mt-3 flex flex-wrap justify-center gap-1.5 px-5">
           {cats.map((c, i) => (
             <span
@@ -119,7 +105,6 @@ export function PosterPreview() {
           ))}
         </div>
 
-        {/* CTA */}
         <div className="absolute inset-x-5 bottom-5">
           <button
             className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-[12px] font-bold uppercase tracking-[0.16em] shadow-2xl"

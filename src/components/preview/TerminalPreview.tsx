@@ -3,15 +3,6 @@ import { withAlpha } from "../../lib/color";
 import { slugifyPaletteName } from "../../lib/download";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
-/**
- * Terminal preview — placeholder mock for testing palette legibility on a
- * monospace terminal surface.
- *
- * The terminal window is intentionally kept terminal-y — no logo typeset
- * inside the shell prompt. The brand anchor sits ABOVE the window in a
- * small ribbon, rendered with the shared <CompetitionLogo/>. URLs and the
- * shell session label use the optional project name from the store.
- */
 export function TerminalPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
@@ -32,7 +23,6 @@ export function TerminalPreview() {
 
   return (
     <div className={`space-y-3 ${cvdClass}`}>
-      {/* Brand ribbon — real logo, not retyped text */}
       <div
         className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2"
         style={{
@@ -49,7 +39,6 @@ export function TerminalPreview() {
         </span>
       </div>
 
-      {/* Terminal window */}
       <div
         className="overflow-hidden rounded-2xl border"
         style={{ borderColor: border, background: bg }}

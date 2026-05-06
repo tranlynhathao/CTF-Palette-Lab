@@ -35,9 +35,6 @@ export function PaletteComparison() {
         </button>
       </div>
 
-      {/* Auto-fit grid: as many columns as fit at ≥260px wide, capped by the
-          number of palettes. Stacks gracefully on narrow viewports without
-          forcing N columns into a 13" centre workspace. */}
       <div
         className="grid gap-3"
         style={{
@@ -89,10 +86,6 @@ function PaletteCompareCard({
         <div className="text-[10px] uppercase tracking-[0.18em] opacity-60">{palette.mood}</div>
         <div className="mt-0.5 text-sm font-semibold">{palette.name}</div>
 
-        {/* Real competition wordmark, routed through the shared component
-            with this card's palette + forced Palette-Aware mode so two
-            compared palettes look distinctly different even when the user
-            has selected Authentic globally. */}
         <div className="mt-3">
           <CompetitionLogo
             palette={palette}

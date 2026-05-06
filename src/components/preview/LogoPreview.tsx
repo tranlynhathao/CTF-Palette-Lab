@@ -5,17 +5,6 @@ import type { LogoColorMode, Palette } from "../../types";
 import { HCMUS_CTF_BRAND_PINK } from "./ExactCompetitionLogo";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
-/**
- * Logo preview tab with three colour modes.
- *
- * - Authentic: master logo values, brand pink locked. Only the surrounding
- *   card backgrounds change with the palette.
- * - Palette-Aware (default): brand pink locked; light, outline and shadow
- *   bind to palette tokens so the wordmark visibly reacts to palette swaps.
- * - Experimental: brand pink is replaced by `palette.primary` for alternate
- *   brand exploration. A warning chip surfaces this.
- */
-
 const MASTER = {
   pink: HCMUS_CTF_BRAND_PINK,
   light: "#FFFFFF",
@@ -31,10 +20,6 @@ export type LogoColorSet = {
   accent?: string;
 };
 
-/**
- * Resolve the four (+1) colour zones for a given palette under a given mode.
- * Centralised so exports + previews + comparison cards all stay consistent.
- */
 export function resolveLogoColors(palette: Palette, mode: LogoColorMode): LogoColorSet {
   if (mode === "authentic") return { ...MASTER };
 
@@ -53,7 +38,6 @@ export function resolveLogoColors(palette: Palette, mode: LogoColorMode): LogoCo
     };
   }
 
-  // paletteAware: brand pink stays locked, everything else binds to palette
   return {
     pink: HCMUS_CTF_BRAND_PINK,
     light: tm,
@@ -76,9 +60,8 @@ export function LogoPreview() {
 
   const cvdClass = cvd === "normal" ? "" : cvd === "grayscale" ? "cvd-grayscale" : `cvd-${cvd}`;
 
-  // Per-card light overrides so the back face stays readable against the
-  // card background. In Authentic the light stays white; in palette modes we
-  // tweak it per card to maintain the 3D extruded effect everywhere.
+  // Tune the "light" zone per card so the extruded back-face remains visible
+  // against each card's distinct background.
   const lightForCard = (cardBg: string | "transparent") => {
     if (mode === "authentic") return colors.light;
     if (cardBg === "transparent") return colorHex(palette, "textMuted");
@@ -91,8 +74,6 @@ export function LogoPreview() {
     <div className="space-y-3">
       <ModeBar />
 
-      {/* Responsive: 1 column by default; 2 columns once cards have ~340px each;
-          3 columns only on very wide screens where each card stays usable. */}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
         <LogoCard label="Dark" sub="bgPrimary" bg={bg} bgClass={cvdClass} mode={mode}>
           <CompetitionLogo

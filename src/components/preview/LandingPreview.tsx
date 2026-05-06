@@ -4,15 +4,6 @@ import { slugifyPaletteName } from "../../lib/download";
 import { CubeMotif } from "../motifs/SvgMotifs";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
-/**
- * Landing-page preview — placeholder mockup for testing palette combinations.
- *
- * Brand identity is rendered via <CompetitionLogo/> in two places:
- *  - the nav bar (compact width)
- *  - the hero (prominent width)
- * Cube motifs remain as supporting decoration only. Marketing copy and the
- * sample terminal snippet are placeholders — swap for your real content.
- */
 export function LandingPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
@@ -37,7 +28,6 @@ export function LandingPreview() {
       className={`overflow-hidden rounded-2xl border ${cvdClass}`}
       style={{ borderColor: border, background: bg }}
     >
-      {/* Nav — real logo in compact size, no typed wordmark */}
       <div
         className="flex items-center justify-between border-b px-6 py-3"
         style={{ borderColor: border, background: withAlpha(bg2, 0.5) }}
@@ -58,7 +48,6 @@ export function LandingPreview() {
         </button>
       </div>
 
-      {/* Hero — real logo as the brand anchor, then editable marketing copy */}
       <div
         className="relative grid gap-6 px-6 py-8 md:grid-cols-[1.2fr_1fr]"
         style={{
@@ -95,13 +84,11 @@ export function LandingPreview() {
             </button>
           </div>
         </div>
-        {/* Decorative cube — supporting graphic, not a logo substitute */}
         <div className="relative grid place-items-center">
           <CubeMotif primary={pr} secondary={sc} accent={ac} size={160} />
         </div>
       </div>
 
-      {/* Countdown */}
       <div className="grid grid-cols-4 gap-2 px-6 pb-4">
         {[
           ["12", "Days"],
@@ -124,7 +111,6 @@ export function LandingPreview() {
         ))}
       </div>
 
-      {/* Cards */}
       <div className="grid gap-2 px-6 md:grid-cols-3">
         {[
           ["Track A", "12 sessions"],
@@ -160,7 +146,6 @@ export function LandingPreview() {
         ))}
       </div>
 
-      {/* Leaderboard + Terminal */}
       <div className="grid gap-2 px-6 py-6 md:grid-cols-2">
         <div className="rounded-xl border p-3" style={{ background: surface, borderColor: border }}>
           <div className="mb-2 text-[10.5px] uppercase tracking-wider" style={{ color: tmu }}>

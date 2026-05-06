@@ -3,28 +3,17 @@ import { useEffect, useState } from "react";
 import { usePaletteStore } from "../../store/paletteStore";
 import { downloadBlob, publicAssetUrl, slugifyPaletteName } from "../../lib/download";
 import { buildLogoSvg, logoSvgFilename } from "../../lib/exportSvg";
-// PDF and ZIP exports pull in heavy dependencies (jspdf, svg2pdf.js, jszip).
-// They're only needed when the user clicks one of those buttons, so we
-// dynamic-import them inside the handlers — Vite code-splits them off the
-// initial bundle and they're fetched on first use only.
+// PDF and ZIP exports are dynamic-imported inside the handlers so jspdf,
+// svg2pdf.js and jszip stay out of the initial bundle.
 
 type Busy = null | "svg" | "pdf" | "ai" | "zip";
 
-/**
- * Adobe Illustrator-focused exports.
- *
- * The app does not synthesise a native `.ai` file from scratch — that format
- * is best produced inside Illustrator itself. Instead, we provide editable
- * vector SVG + vector PDF generated from the live palette, plus the original
- * `.ai` template, so designers can continue work without losing fidelity.
- */
 export function IllustratorExportPanel() {
   const palette = usePaletteStore((s) => s.current);
   const showToast = usePaletteStore((s) => s.showToast);
   const [busy, setBusy] = useState<Busy>(null);
   const [aiAvailable, setAiAvailable] = useState<boolean | null>(null);
 
-  // Check whether the original .ai exists at the deployed URL.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -42,10 +31,6 @@ export function IllustratorExportPanel() {
     };
   }, []);
 
-  // Exports follow the same colour mode the user is previewing, so what the
-  // user sees in the Logo tab is what they download. Authentic + Palette-Aware
-  // keep brand pink locked; Experimental overrides it (with a warning baked
-  // into the SVG metadata).
   const mode = usePaletteStore((s) => s.logoMode);
 
   const onSvg = async () => {

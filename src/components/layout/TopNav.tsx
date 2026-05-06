@@ -1,17 +1,6 @@
 import { Sparkles, Save, Download, RotateCcw, Cuboid, Keyboard } from "lucide-react";
 import { usePaletteStore } from "../../store/paletteStore";
 
-/**
- * Minimal app header.
- *
- * Holds:
- *  - small icon + neutral product title
- *  - the essential global actions (Generate / Save / Export / Reset / Shortcuts)
- *
- * No marketing copy, no fixed project badge, no project-name placeholder.
- * The `projectName` slice in the store is still used by previews/exports —
- * surface it through a future settings panel if you want it editable.
- */
 export function TopNav({
   onOpenExport,
   onOpenShortcuts,

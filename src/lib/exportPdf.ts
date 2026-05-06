@@ -1,19 +1,3 @@
-/**
- * Vector PDF export of the current logo.
- *
- * Uses svg2pdf.js + jspdf — both run entirely in the browser. The output is a
- * real vector PDF (no rasterisation): each <path> in the source SVG becomes a
- * vector path operator in the PDF stream, so Illustrator can re-open it and
- * the geometry stays editable and resolution-independent.
- *
- * Limitations (honest):
- * - svg2pdf supports the SVG features used by our logo (paths, fills,
- *   strokes, transforms, <use> references). It does NOT support arbitrary
- *   filters, masks, or CSS variables, which is exactly why we run the SVG
- *   through `buildLogoSvg` first to flatten CSS variables to literal hex.
- * - PDF colour space is sRGB. The brand pink #E42175 is preserved as-is.
- */
-
 import { jsPDF } from "jspdf";
 import { svg2pdf } from "svg2pdf.js";
 
@@ -23,20 +7,17 @@ import { usePaletteStore } from "../store/paletteStore";
 import type { Palette } from "../types";
 
 const ARTBOARD = {
-  // Source artboard is 210pt × 70pt. We add comfortable padding so the
-  // exported PDF reads as a brand asset rather than a tightly cropped page.
   pagePtW: 420,
   pagePtH: 220,
   paddingX: 60,
   paddingY: 60,
 };
 
-/** Build a vector PDF blob for the current palette. */
 export async function buildLogoPdfBlob(opts: LogoExportOptions): Promise<Blob> {
   const svgString = buildLogoSvg(opts);
 
-  // Parse the SVG string into a real <svg> DOM node — svg2pdf needs a node,
-  // not a string. We render it off-screen so layout doesn't flicker.
+  // svg2pdf needs a real <svg> node, not a string. Render it off-screen so
+  // layout doesn't flicker.
   const container = document.createElement("div");
   container.style.position = "absolute";
   container.style.left = "-99999px";
@@ -45,7 +26,6 @@ export async function buildLogoPdfBlob(opts: LogoExportOptions): Promise<Blob> {
   const svgEl = container.querySelector("svg") as SVGSVGElement | null;
   if (!svgEl) throw new Error("Could not parse logo SVG for PDF export");
 
-  // Force explicit width/height in pt so svg2pdf maps coordinates 1:1.
   const sourceW = 210;
   const sourceH = 70;
   svgEl.setAttribute("width", String(sourceW));
@@ -60,7 +40,6 @@ export async function buildLogoPdfBlob(opts: LogoExportOptions): Promise<Blob> {
       compress: true,
     });
 
-    // Centre the artwork on the page with padding.
     const targetW = ARTBOARD.pagePtW - 2 * ARTBOARD.paddingX;
     const targetH = ARTBOARD.pagePtH - 2 * ARTBOARD.paddingY;
     const scale = Math.min(targetW / sourceW, targetH / sourceH);
@@ -71,9 +50,6 @@ export async function buildLogoPdfBlob(opts: LogoExportOptions): Promise<Blob> {
 
     await svg2pdf(svgEl, pdf, { x, y, width: drawW, height: drawH });
 
-    // Tiny footer outside the visual safe area, so it never collides with
-    // the wordmark itself. Designers can delete this in Illustrator if
-    // they want a fully unmarked artboard.
     const projectName = usePaletteStore.getState().projectName;
     const footer =
       [projectName, opts.palette.name, "brand pink locked #E42175"].filter(Boolean).join(" · ") +
@@ -98,10 +74,8 @@ export async function buildLogoPdfBlob(opts: LogoExportOptions): Promise<Blob> {
   }
 }
 
-/** Standard PDF filename for the current palette. */
 export function logoPdfFilename(palette: Palette): string {
   return assetFilename(usePaletteStore.getState().projectName, palette.name, "logo", "pdf");
 }
 
-// Re-exported so consumers can build their own SVG variants alongside PDF.
 export { buildLogoSvg, logoSvgFilename };

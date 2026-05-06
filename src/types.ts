@@ -202,18 +202,4 @@ export const DEFAULT_GENERATION_OPTIONS: GenerationOptions = {
 
 export type CvdMode = "normal" | "protanopia" | "deuteranopia" | "tritanopia" | "grayscale";
 
-/**
- * How the Logo preview tab interprets palette colors.
- *
- * - `authentic`     — All zones stay at the original master values. Brand
- *                     pink #E42175 locked. Only the surrounding card
- *                     background changes.
- * - `paletteAware`  — Brand pink locked. Other zones (light back-face,
- *                     dark outline, dark shadow) bind to palette tokens.
- *                     The default — most useful for actually testing
- *                     palettes against the real logo.
- * - `experimental`  — Even the brand pink is overridden by palette.primary.
- *                     Surfaces a warning. Useful for exploring alternate
- *                     brand directions; never the canonical preview.
- */
 export type LogoColorMode = "authentic" | "paletteAware" | "experimental";

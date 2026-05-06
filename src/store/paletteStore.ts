@@ -26,7 +26,6 @@ type PaletteState = {
   comparison: string[]; // saved palette ids
   cvd: CvdMode;
   logoMode: LogoColorMode;
-  /** Optional, user-editable project name. Empty = no project context. */
   projectName: string;
   toast: { id: number; text: string } | null;
 
@@ -124,7 +123,6 @@ export const usePaletteStore = create<PaletteState>()(
 
       regenerateOne: (role) => {
         const { seed, mood, harmony, options, current } = get();
-        // lock everything else, regenerate just this one
         const lockedMap: Partial<Record<ColorRole, string>> = {};
         current.colors.forEach((c) => {
           if (c.role !== role) lockedMap[c.role] = c.hex;

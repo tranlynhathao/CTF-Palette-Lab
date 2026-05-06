@@ -58,9 +58,6 @@ export function PreviewTabs() {
           <div className="label-eyebrow">Visual Preview</div>
           <h3 className="mt-1 text-base font-semibold text-white">How does this palette feel?</h3>
         </div>
-        {/* `min-w-0` so the Tabs row can shrink + horizontally scroll inside.
-            `flex-wrap` lets the PNG button drop below the Tabs on very narrow
-            widths instead of squeezing them. */}
         <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
           <div className="min-w-0 max-w-full flex-1">
             <Tabs tabs={tabs} value={tab} onChange={setTab} />

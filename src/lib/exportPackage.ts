@@ -1,9 +1,3 @@
-/**
- * Build the "Illustrator Package" ZIP — a self-contained handoff bundle for
- * a designer who wants to continue editing the wordmark in Adobe Illustrator
- * with the current palette.
- */
-
 import JSZip from "jszip";
 import type { Palette } from "../types";
 import { ROLE_META } from "../types";
@@ -16,9 +10,7 @@ import { usePaletteStore } from "../store/paletteStore";
 
 export type PackageOptions = {
   palette: Palette;
-  /** Logo colour mode applied to the bundled SVG/PDF. Defaults to paletteAware. */
   mode?: import("../types").LogoColorMode;
-  /** Optional explicit overrides — bypass `mode` resolution if provided. */
   pink?: string;
   light?: string;
   outline?: string;
@@ -28,22 +20,17 @@ export type PackageOptions = {
 export type PackageResult = {
   blob: Blob;
   filename: string;
-  /** True if the original .ai template was successfully bundled. */
   aiIncluded: boolean;
-  /** True if the vector PDF was generated and bundled. */
   pdfIncluded: boolean;
 };
 
-/** Build the ZIP and return it as a Blob plus diagnostics for the UI. */
 export async function buildIllustratorPackage(opts: PackageOptions): Promise<PackageResult> {
   const { palette } = opts;
   const zip = new JSZip();
 
-  // 1. Current-palette SVG
   const svg = buildLogoSvg(opts);
   zip.file(`logo-current-palette.svg`, svg);
 
-  // 2. Current-palette vector PDF
   let pdfIncluded = false;
   try {
     const pdfBlob = await buildLogoPdfBlob(opts);
@@ -58,12 +45,8 @@ export async function buildIllustratorPackage(opts: PackageOptions): Promise<Pac
     );
   }
 
-  // 3. Original AI template — intentionally NOT shipped in this public app.
-  //    The master is typically held outside the public deployment. We still
-  //    attempt the fetch so a private deployment that does serve the .ai
-  //    (via an authenticated path or private mirror) bundles it automatically.
-  //    In the public deployment the fetch fails and we drop in an explanatory
-  //    note instead — no broken file, no surprise.
+  // Attempt the .ai fetch even though the public deployment doesn't ship it,
+  // so a private mirror that does serve the master gets it bundled automatically.
   let aiIncluded = false;
   try {
     const res = await fetch(publicAssetUrl("assets/logo/logo-ctf26.ai"));
@@ -77,17 +60,12 @@ export async function buildIllustratorPackage(opts: PackageOptions): Promise<Pac
     zip.file(`logo-original.ai.NOTICE.txt`, AI_POLICY_NOTICE);
   }
 
-  // 4. Palette artefacts
   zip.file(`palette.json`, toPaletteJson(palette));
   zip.file(`palette.css`, toCssVariables(palette));
   zip.file(`tailwind-colors.js`, toTailwindConfig(palette));
   zip.file(`figma-tokens.json`, toFigmaTokens(palette));
   zip.file(`illustrator-swatches.txt`, buildSwatchesText(palette));
-
-  // 5. Optional Illustrator JSX automation script
   zip.file(`open-and-save-as-ai.jsx`, JSX_SCRIPT);
-
-  // 6. README
   zip.file(
     `README.md`,
     buildReadme(palette, {
@@ -202,11 +180,6 @@ In Illustrator: \`File → Scripts → Other Script…\` → pick \`open-and-sav
 `;
 }
 
-/**
- * Explanation that ships in the ZIP when the master AI is not bundled.
- * Phrased as policy, not as a missing-file error, because that is the truth:
- * the master is intentionally not part of the public deployment.
- */
 const AI_POLICY_NOTICE = `Master Adobe Illustrator template
 
 The master \`logo-original.ai\` source file is not shipped with this public
@@ -231,11 +204,6 @@ The default brand pink \`#E42175\` is locked across every export (except
 in Experimental mode) — never substitute it without intent.
 `;
 
-/**
- * Tiny Illustrator JSX automation. Opens a sibling SVG and saves a `.ai` next
- * to it. Designed to be safe: it neither overwrites without prompting nor
- * touches anything outside its own folder.
- */
 const JSX_SCRIPT = `// open-and-save-as-ai.jsx
 // Run from Illustrator: File → Scripts → Other Script…
 // Opens logo-current-palette.svg sitting next to this script and saves a

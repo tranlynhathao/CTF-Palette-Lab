@@ -10,17 +10,6 @@ import { ExportModal } from "../export/ExportModal";
 import { usePaletteStore } from "../../store/paletteStore";
 import { ChevronLeft, ChevronRight, PanelRight } from "lucide-react";
 
-/**
- * Responsive dashboard shell.
- *
- *  - desktop (≥ 1536px / 2xl): left + center + right are all visible
- *  - laptop (1280–1535px / xl): left + center visible, right collapses by
- *    default but the toggle button still reveals it on demand
- *  - smaller laptop / 13" MacBook (1024–1279px): only the center workspace
- *    is visible by default; both sidebars collapse but stay toggleable
- *  - tablet / mobile (< 1024px): single column. The Sidebar and RightPanel
- *    move into collapsible <details> sections above and below the workspace
- */
 const initialOpen = (minWidth: number, fallback: boolean) =>
   typeof window === "undefined" ? fallback : window.innerWidth >= minWidth;
 
@@ -80,7 +69,6 @@ export function AppShell() {
       />
 
       <div className="relative flex min-h-[calc(100vh-3.5rem)] w-full">
-        {/* Left sidebar */}
         <div
           className={`hidden shrink-0 border-r border-white/5 bg-black/20 transition-all duration-300 lg:block ${
             leftOpen ? "w-[300px]" : "w-0 overflow-hidden"
@@ -97,11 +85,7 @@ export function AppShell() {
           {leftOpen ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
         </button>
 
-        {/* Center workspace — `min-w-0` is critical so that long children
-            can shrink below their intrinsic width and not force horizontal
-            scroll on the whole shell. */}
         <main className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
-          {/* Mobile sections */}
           <div className="lg:hidden">
             <details className="border-b border-white/5">
               <summary className="cursor-pointer px-4 py-3 text-xs uppercase tracking-wider text-white/60">
@@ -127,7 +111,6 @@ export function AppShell() {
           </div>
         </main>
 
-        {/* Right panel */}
         <button
           onClick={() => setRightOpen((v) => !v)}
           className="absolute right-0 top-3 z-20 hidden rounded-l-md border border-r-0 border-white/10 bg-black/40 p-1 text-white/50 hover:bg-black/60 hover:text-white lg:block"

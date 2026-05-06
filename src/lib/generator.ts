@@ -51,7 +51,6 @@ export function generatePalette(opts: {
   const isNeon = options.neonAccent;
   const isDark = options.darkOptimized;
 
-  // Background tones (always dark for CTF themes if darkOptimized)
   const bgL = isDark ? 0.08 : 0.18;
   const bgC = isClassic ? 0.012 : 0.02;
   const bgHue = moveHueTowards(seedOk.h ?? 240, 240, 0.4);
@@ -62,38 +61,32 @@ export function generatePalette(opts: {
   const surfaceElevated = oklchToHex(bgL + 0.1, bgC + 0.012, bgHue);
   const border = oklchToHex(bgL + 0.05, bgC + 0.005, bgHue);
 
-  // Primary color (driven by seed)
   const primaryC = isMuted ? 0.12 : isNeon ? 0.22 : 0.18;
   const primaryL = isHighContrast ? 0.55 : 0.5;
   let primaryHue = seedOk.h ?? moodBias.primary;
   primaryHue = moveHueTowards(primaryHue, moodBias.primary, 0.25);
   const primary = oklchToHex(primaryL, primaryC, primaryHue);
 
-  // Secondary
   let secondaryHue = hues[1] ?? primaryHue + 180;
   secondaryHue = moveHueTowards(secondaryHue, moodBias.secondary, 0.3);
   const secondaryL = 0.7;
   const secondaryC = isMuted ? 0.1 : 0.15;
   const secondary = oklchToHex(secondaryL, secondaryC, secondaryHue);
 
-  // Accent
   let accentHue = hues[2] ?? primaryHue + 60;
   accentHue = moveHueTowards(accentHue, moodBias.accent, 0.4);
   const accentL = 0.7;
   const accentC = isMuted ? 0.1 : 0.16;
   const accent = oklchToHex(accentL, accentC, accentHue);
 
-  // Highlight
   const highlightHue = (primaryHue + 20) % 360;
   const highlight = oklchToHex(0.65, primaryC * 0.9, highlightHue);
 
-  // Text
   const textMainL = 0.94;
   const textMainC = isClassic ? 0.02 : 0.01;
   const textMain = oklchToHex(textMainL, textMainC, isClassic ? 75 : 80);
   const textMuted = oklchToHex(0.65, 0.015, bgHue + 30);
 
-  // Danger
   const danger = oklchToHex(0.62, 0.18, 25);
 
   let map: RoleHexMap = {
@@ -111,12 +104,10 @@ export function generatePalette(opts: {
     danger,
   };
 
-  // Override with locked colors
   (Object.keys(locked) as ColorRole[]).forEach((role) => {
     if (locked[role]) map[role] = locked[role]!;
   });
 
-  // Repair contrasts (only on unlocked colors)
   map = repairContrasts(map, locked);
 
   const colors: PaletteColor[] = (Object.keys(map) as ColorRole[]).map((role) => ({
@@ -173,7 +164,6 @@ function harmonyHues(seed: string, harmony: HarmonyMode): number[] {
 function repairContrasts(map: RoleHexMap, locked: Partial<RoleHexMap>): RoleHexMap {
   const out = { ...map };
 
-  // Ensure textMain has decent contrast on bgPrimary
   if (!locked.textMain) {
     let attempts = 0;
     while (contrastRatio(out.textMain, out.bgPrimary) < 7 && attempts < 8) {
@@ -182,7 +172,6 @@ function repairContrasts(map: RoleHexMap, locked: Partial<RoleHexMap>): RoleHexM
     }
   }
 
-  // Muted text — keep above 3
   if (!locked.textMuted) {
     let attempts = 0;
     while (contrastRatio(out.textMuted, out.bgPrimary) < 3.2 && attempts < 8) {
@@ -191,7 +180,6 @@ function repairContrasts(map: RoleHexMap, locked: Partial<RoleHexMap>): RoleHexM
     }
   }
 
-  // Primary should pop on bgPrimary
   if (!locked.primary) {
     let attempts = 0;
     while (contrastRatio(out.primary, out.bgPrimary) < 4 && attempts < 8) {
@@ -200,7 +188,6 @@ function repairContrasts(map: RoleHexMap, locked: Partial<RoleHexMap>): RoleHexM
     }
   }
 
-  // Accent should pop on bgPrimary but not over-saturate
   if (!locked.accent) {
     let attempts = 0;
     while (contrastRatio(out.accent, out.bgPrimary) < 3.5 && attempts < 8) {
@@ -209,7 +196,6 @@ function repairContrasts(map: RoleHexMap, locked: Partial<RoleHexMap>): RoleHexM
     }
   }
 
-  // Border should be subtle but visible
   if (!locked.border) {
     out.border = mixHex(out.bgPrimary, out.textMuted, 0.18);
   }
@@ -272,7 +258,6 @@ export function regenerateUnlocked(
   });
   fresh.id = current.id;
   fresh.createdAt = current.createdAt;
-  // preserve lock state
   fresh.colors = fresh.colors.map((c) => ({
     ...c,
     locked: !!lockedMap[c.role],

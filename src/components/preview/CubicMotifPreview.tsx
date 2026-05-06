@@ -11,13 +11,6 @@ import {
 } from "../motifs/SvgMotifs";
 import { CompetitionLogo } from "../brand/CompetitionLogo";
 
-/**
- * Cubic motifs preview.
- *
- * The real wordmark anchors the top of the panel via <CompetitionLogo/>.
- * The cube grid below is supporting decoration — alternative geometric
- * stamps that complement the brand mark, never replace it.
- */
 export function CubicMotifPreview() {
   const current = usePaletteStore((s) => s.current);
   const cvd = usePaletteStore((s) => s.cvd);
@@ -46,7 +39,6 @@ export function CubicMotifPreview() {
       className={`overflow-hidden rounded-2xl border ${cvdClass}`}
       style={{ background: bg, borderColor: border }}
     >
-      {/* Brand anchor */}
       <div
         className="flex items-center justify-between gap-3 border-b px-4 py-3"
         style={{
@@ -60,7 +52,6 @@ export function CubicMotifPreview() {
         </span>
       </div>
 
-      {/* Cube grid — supporting decoration only */}
       <div className="grid gap-3 p-3 sm:grid-cols-3 lg:grid-cols-4">
         {items.map(({ name, Comp }) => (
           <div
